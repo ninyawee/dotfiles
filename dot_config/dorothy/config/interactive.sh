@@ -34,6 +34,11 @@ if is-wsl; then
 # WSL-specific code
 export BROWSER=/usr/bin/wslview
 alias open="/usr/bin/wslview"
+
+# for 1password ref https://developer.1password.com/docs/ssh/integrations/wsl/
+alias ssh="ssh.exe"
+alias ssh-add="ssh-add.exe"
+git config --global core.sshCommand ssh.exe
 fi
 
 

@@ -1,0 +1,46 @@
+[user]
+	email = nutchanon@codustry.com
+	name = Nutchanon Ninyawee
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIczVOTf/dS2Lswk673XoDQ8FozvCaLbChT+keX4cmjW
+	
+[pull]
+	rebase = false
+	
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/nam/.local/share/rtx/installs/github-cli/2.40.1/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/home/nam/.local/share/rtx/installs/github-cli/2.40.1/bin/gh auth git-credential
+[core]
+	excludesfile = /home/nam/.gitignore_global
+	editor = nano
+[push]
+	default = simple
+[mergetool]
+	keepBackup = false
+[color]
+	ui = auto
+[init]
+	defaultBranch = main
+[git]
+	protocol = https
+[github]
+	user = wasdee
+[gitlab]
+	user = wasdee
+[diff]
+	tool = delta
+[merge]
+	tool = delta
+[credential]
+	helper = cache --timeout=86400
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  program = "/mnt/c/Users/lifep/AppData/Local/1Password/app/8/op-ssh-sign-wsl"
+
+[commit]
+  gpgsign = true
