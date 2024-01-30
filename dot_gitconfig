@@ -6,12 +6,6 @@
 [pull]
 	rebase = false
 	
-[credential "https://github.com"]
-	helper = 
-	helper = !/home/nam/.local/share/rtx/installs/github-cli/2.40.1/bin/gh auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !/home/nam/.local/share/rtx/installs/github-cli/2.40.1/bin/gh auth git-credential
 [core]
 	excludesfile = /home/nam/.gitignore_global
 	editor = nano
