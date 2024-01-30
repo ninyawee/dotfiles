@@ -48,9 +48,9 @@ alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
 
 alias chat='aider --4-turbo --map-token 2048'
 
-alias ?='gh copilot suggest -t shell '
+alias q='gh copilot suggest -t shell '
 
-alias gh?="gh copilot suggest -t gh "
-alias git?="gh copilot suggest -t git "
+alias ghq="gh copilot suggest -t gh "
+alias gitq="gh copilot suggest -t git "
 
-alias ??="gh copilot explain "
+alias qq="gh copilot explain "
