@@ -1,31 +1,8 @@
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-eval "$(mise activate bash)"
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  elif [ -d ~/.bash_completions ]; then
-    for file in ~/.bash_completions/*; do
-      echo "Loading completion file $file"
-      . "$file"
-    done
-  fi
-fi
-
-if [ -d ~/.bash_completions ]; then
-    for file in ~/.bash_completions/*; do
-        # echo "Loading completion file $file"
-        . "$file"
-    done
-fi
 
 
+eval "$(mise activate zsh)"
 
 export FLYCTL_INSTALL="$HOME/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
@@ -41,9 +18,6 @@ alias ssh-add="ssh-add.exe"
 git config --global core.sshCommand ssh.exe
 fi
 
-
-
-
 export PATH=/usr/bin:$PATH
 
 
@@ -54,7 +28,6 @@ elif [ -S /run/user/$UID/docker.sock ]; then
     export DOCKER_HOST=unix:///run/user/$UID/docker.sock
     export DOCKER_HOST_PATH=${DOCKER_HOST#unix://}
 fi
-
 
 export EDITOR="$(which code) --wait"
 export SUDO_EDITOR=EDITOR
@@ -70,23 +43,19 @@ esac
 
 
 
-
 PATH="$HOME/.local/share/mise/shims:$PATH"
 
-# run here since it checks for the existence cmd 
+# run here since it checks for the existence cmd
 if  mise list zoxide &> /dev/null; then
     BIN=$(mise which zoxide)
-    eval "$($BIN init bash)"
+    eval "$($BIN init zsh)"
 fi
 
 if  mise list mcfly &> /dev/null; then
     BIN=$(mise which mcfly)
-    eval "$($BIN init bash)"
+    eval "$($BIN init zsh)"
 fi
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
 
 if  mise list flutter &> /dev/null ; then
     export FLUTTER_ROOT="$(mise where flutter)"
@@ -100,11 +69,10 @@ fi
 export PYTHON_KEYRING_BACKEND=keyring.backends.fail.Keyring
 
 if command -v starship &> /dev/null
-then 
-    eval "$(starship init bash)"
+then
+    eval "$(starship init zsh)"
 fi
 
-# [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 
 export DOROTHY_THEME='starship'
 
