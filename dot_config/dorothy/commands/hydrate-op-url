@@ -1,0 +1,18 @@
+#!/bin/bash
+
+. check-and-signin-op
+
+# find all files containing op:// and hydrate them
+# - respect ignore
+# - able to find .env.tpl files which are considered hidden
+# - use rg command to search for files
+
+for file in $(rg -l --hidden 'op://'); do
+    echo "Injecting $file"
+    read -p "Do you want to inject $file? (y/n): " choice
+    if [[ $choice == "y" ]]; then
+        op inject -i "$file" -o "$file" -f
+    else
+        echo "Skipping $file"
+    fi
+done

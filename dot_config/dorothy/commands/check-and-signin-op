@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# run with source to export the environment variables
+# source check-and-signin-op
+# or . check-and-signin-op
+DEBUG=0
+
+# check if env prefix OP_SESSION_*
+if env | grep -q '^OP_SESSION_'; then
+    echo "Already Logged in to 1Password"
+    
+else
+    if [ "$DEBUG" -eq 1 ]; then
+        echo "Environment variable with prefix OP_SESSION_ does not exist."
+        echo "Signing in to 1Password..."
+    fi
+    eval $(op signin)
+fi

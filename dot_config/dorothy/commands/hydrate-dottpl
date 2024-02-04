@@ -1,0 +1,11 @@
+#!/bin/bash
+
+. check-and-signin-op
+
+# find all *.tpl files recursively and inject them and remove the .tpl extension
+# - able to find .env.tpl files which considered hidden
+
+for file in $(fd --hidden -e tpl); do
+  echo "Injecting $file"
+  op inject -i $file -o ${file%.*} -f
+done
