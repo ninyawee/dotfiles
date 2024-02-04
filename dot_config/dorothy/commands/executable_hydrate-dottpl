@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if ! is-op-signed; then
-  echo "please run `eval $(op signin)` first"
+  echo 'please run `eval $(op signin)` first'
 fi
 
 # find all *.tpl files recursively and inject them and remove the .tpl extension
