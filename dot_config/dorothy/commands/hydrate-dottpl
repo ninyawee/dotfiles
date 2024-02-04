@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-. check-and-signin-op
+if ! is-op-signed; then
+  echo "please run `eval $(op signin)` first"
+fi
 
 # find all *.tpl files recursively and inject them and remove the .tpl extension
 # - able to find .env.tpl files which considered hidden

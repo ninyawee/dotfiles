@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-. check-and-signin-op
+if ! is-op-signed; then
+  echo "please run `eval $(op signin)` first"
+fi
 
 # find all files containing op:// and hydrate them
 # - respect ignore
