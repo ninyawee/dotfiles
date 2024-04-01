@@ -1,3 +1,4 @@
+{{ if ne .chezmoi.os "windows" -}}
 #!/usr/bin/env bash
 
 git config --global user.email {{ .email | quote }}
@@ -7,3 +8,6 @@ git config --global user.name {{ .name | quote }}
 git config --global pull.rebase false
 
 echo "git is configured"
+{{ end -}}
+
+

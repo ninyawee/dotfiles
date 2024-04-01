@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
-# A chezmoi script to install all the dependencies I need on a new machine
-
-
-
 {{ if eq .chezmoi.os "windows" -}}
+winget install --id=Starship.Starship  -e
+winget install --id=Microsoft.WindowsTerminal  -e
+winget install --id=Microsoft.VisualStudioCode  -e
+winget install --id=Microsoft.PowerToys  -e
 
-echo "Im on windows"
+. (Join-Path (Split-Path $PROFILE -Parent) "commands\1pass.ps1")
 
+op document create "$HOME/.ssh/config" --title "ssh-config"
 
 {{ end -}}
