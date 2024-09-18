@@ -5,7 +5,7 @@ git config --global user.email {{ .email | quote }}
 git config --global user.name {{ .name | quote }}
 
 # prefer fast-forward
-git config --global pull.rebase false
+git config --global pull.rebase true
 
 echo "git is configured"
 {{ end -}}
