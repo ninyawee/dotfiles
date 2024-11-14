@@ -1,0 +1,53 @@
+/* From this  https://razvanpredescu.medium.com/customize-visual-studio-code-for-multiple-fonts-and-styles-96f83562af58 */
+
+
+/* mtk3.mkti is comment */
+.mtk3 {
+  /* margin-left: 1px; */
+  font-family: "Monaspace Radon";
+  font-style: normal;
+  font-weight: 300;
+  letter-spacing: 0;
+  font-size: 1.2em;
+  
+}
+
+/* 
+[Maybe inaccurate] AI TOLD that
+.mtk1 - Default text
+.mtk4 - Keywords
+.mtk7 - Strings
+.mtk8 - Numbers
+.mtk9 - Classes/Types 
+*/
+
+
+
+/* .mtk7,
+.mtk3,
+.mtk13,
+.mtk16 {
+  margin-left: 1px;
+  font-family: "Monaspace Radon";
+} */
+
+/* .mtk7,
+.mtk4 {
+  font-family: "JetBrainsMono Nerd Font";
+
+} */
+
+/* 
+  For the tab titles.
+*/
+/* .monaco-icon-label-description-container .label-name {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 1.3em;
+} */
+
+/* .tabs-container .monaco-icon-label-description-container .label-name,
+.sidebar .monaco-icon-label-description-container .label-name,
+.quick-open-row .monaco-icon-label-description-container .label-name {
+  font-family: -apple-system,BlinkMacSystemFont,Segoe WPC,Segoe UI,HelveticaNeue-Light,Ubuntu,Droid Sans,sans-serif;
+  font-size: 1em;
+} */
