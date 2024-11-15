@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+
+EXECUTABLE="op"
+
+if is-wsl; then
+    EXECUTABLE="op.exe"
+fi
+
+echo "Please make sure you are signed into 1Password, as you will be prompted for your 1Password credentials."
+eval $($EXECUTABLE signin)
+
+# Find all *.tpl files recursively and store them in an array
+mapfile -t tpl_files < <(fdfind -e tpl -E .venv)
+
+# List all found .tpl files
+echo "Found the following .tpl files:"
+for file in "${tpl_files[@]}"; do
+    echo "  $file"
+done
+
+# Ask for confirmation before proceeding
+read -p "Do you want to inject and overwrite all these files? (y/n) " -n 1 -r
+echo    # Move to a new line
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    # Process all files
+    for file in "${tpl_files[@]}"; do
+        echo "Injecting $file"
+        $EXECUTABLE inject -i "$file" -o "${file%.*}" -f
+    done
+    echo "All files have been processed."
+else
+    echo "Operation cancelled."
+fi
