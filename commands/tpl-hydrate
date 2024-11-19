@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Check the current working directory
+echo "Current working directory: $(pwd)"
+
 EXECUTABLE="op"
 
 if is-wsl; then
@@ -11,7 +14,7 @@ echo "Please make sure you are signed into 1Password, as you will be prompted fo
 eval $($EXECUTABLE signin)
 
 # Find all *.tpl files recursively and store them in an array
-mapfile -t tpl_files < <(fdfind -e tpl -E .venv)
+mapfile -t tpl_files < <(fd -H -e tpl -E .venv)
 
 # List all found .tpl files
 echo "Found the following .tpl files:"
