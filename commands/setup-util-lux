@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# https://github.com/iawia002/lux
+
+function setup_util_lux() (
+	source "$DOROTHY/sources/bash.bash"
+
+	# setup
+	local options=(
+		--cli='lux'
+		"$@"
+	)
+
+	# install
+	setup-util "${options[@]}" -- \
+		GO='github.com/iawia002/lux'
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	setup_util_lux "$@"
+fi 

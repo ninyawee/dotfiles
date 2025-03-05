@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+# It has been checked and developed on window platform wsl
+
+function is_cursor() (
+	source "$DOROTHY/sources/bash.bash"
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Checks if the environment is running within Cursor editor.
+
+			USAGE:
+			is-cursor
+
+			RETURNS:
+			[0] if the environment is within Cursor editor
+			[1] if the environment is not within Cursor editor
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process
+	local item
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'--'*) help "An unrecognised flag was provided: $item" ;;
+		*) help "An unrecognised argument was provided: $item" ;;
+		esac
+	done
+
+	# =====================================
+	# Action
+
+	# Check for Cursor-specific environment variables
+	if [[ ${NAME-} == "Cursor" ]]; then
+		return 0
+	fi
+
+	# Also check if we're in VSCode with Cursor-specific environment variables
+	if [[ ${TERM_PROGRAM-} == 'vscode' ]]; then
+		# Check for Cursor in environment variables
+		if env | grep -q "NAME=Cursor"; then
+			return 0
+		fi
+	fi
+
+	# If none of the above conditions are met, we're not in Cursor
+	return 1
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	is_cursor "$@"
+fi 

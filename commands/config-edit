@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+function config_edit() (
+	source "$DOROTHY/sources/bash.bash"
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Edit a configuration file.
+
+			USAGE:
+			config-edit [--file=<path>] [--line=<line>] [--key=<key>] [--value=<value>] [--comment=<comment>] [--no-comment] [--no-key] [--no-value] [--no-line] [--no-file] [--no-edit] [--dry] [--quiet]
+
+			OPTIONS:
+			--file=<path>
+			    The path to the configuration file.
+			--line=<line>
+			    The line to edit.
+			--key=<key>
+			    The key to edit.
+			--value=<value>
+			    The value to edit.
+			--comment=<comment>
+			    The comment to edit.
+			--no-comment
+			    Don't include a comment.
+			--no-key
+			    Don't include a key.
+			--no-value
+			    Don't include a value.
+			--no-line
+			    Don't include a line.
+			--no-file
+			    Don't include a file.
+			--no-edit
+			    Don't edit the file.
+			--dry
+			    Don't actually edit the file, just print what would be done.
+			--quiet
+			    Don't print anything.
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process
+	local item option_file='' option_line='' option_key='' option_value='' option_comment='' option_no_comment='no' option_no_key='no' option_no_value='no' option_no_line='no' option_no_file='no' option_no_edit='no' option_dry='no' option_quiet='no'
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'--file='*) option_file="${item#*=}" ;;
+		'--line='*) option_line="${item#*=}" ;;
+		'--key='*) option_key="${item#*=}" ;;
+		'--value='*) option_value="${item#*=}" ;;
+		'--comment='*) option_comment="${item#*=}" ;;
+		'--no-comment') option_no_comment='yes' ;;
+		'--no-key') option_no_key='yes' ;;
+		'--no-value') option_no_value='yes' ;;
+		'--no-line') option_no_line='yes' ;;
+		'--no-file') option_no_file='yes' ;;
+		'--no-edit') option_no_edit='yes' ;;
+		'--dry') option_dry='yes' ;;
+		'--quiet') option_quiet='yes' ;;
+		'--'*) help "An unrecognised flag was provided: $item" ;;
+		*) help "An unrecognised argument was provided: $item" ;;
+		esac
+	done
+
+	if is-vscode-like ; then
+		# https://github.com/Microsoft/vscode/issues/29523
+		if [[ $option_line == *'	'* ]]; then
+			option_line="${option_line/	/        }"
+		fi
+	fi
+
+	# =====================================
+	# Action
+
+	# Prepare
+	local result=''
+	if [[ $option_no_line == 'no' && -n $option_line ]]; then
+		result="$option_line"
+	fi
+
+	# Key
+	if [[ $option_no_key == 'no' && -n $option_key ]]; then
+		if [[ -n $result ]]; then
+			result="$result$option_key"
+		else
+			result="$option_key"
+		fi
+	fi
+
+	# Value
+	if [[ $option_no_value == 'no' && -n $option_value ]]; then
+		if [[ -n $result ]]; then
+			result="$result=$option_value"
+		else
+			result="$option_value"
+		fi
+	fi
+
+	# Comment
+	if [[ $option_no_comment == 'no' && -n $option_comment ]]; then
+		if [[ -n $result ]]; then
+			result="$result # $option_comment"
+		else
+			result="# $option_comment"
+		fi
+	fi
+
+	# Output
+	if [[ $option_quiet == 'no' ]]; then
+		echo "$result"
+	fi
+
+	# Edit
+	if [[ $option_no_edit == 'no' && $option_no_file == 'no' && -n $option_file ]]; then
+		if [[ $option_dry == 'yes' ]]; then
+			echo "Would edit $option_file with: $result"
+		else
+			echo "$result" >"$option_file"
+		fi
+	fi
+
+	# Return
+	return 0
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	config_edit "$@"
+fi 

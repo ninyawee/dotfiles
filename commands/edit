@@ -1,0 +1,265 @@
+#!/usr/bin/env bash
+
+function edit_() (
+	source "$DOROTHY/sources/bash.bash"
+	__require_array 'mapfile'
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Open your preferred editor.
+
+			USAGE:
+			edit [...options] [--] [...everything here is forwarded to the editor]
+
+			OPTIONS:
+			--dry
+			    If enabled, output the editor instead of invoking it.
+
+			--[no-]prompt
+			    If enabled (the default), support editors that require additional arguments to edit the file.
+
+			--[no-]wait
+			    If disabled (the default), edit the file but skip waiting for the editor to close the file.
+
+			--only-editor
+			    If enabled, only output the editor command, and not any arguments.
+			    Enforces --dry.
+
+			--sudo
+			    If enabled, the editor will be opened in sudo mode.
+
+			--terminal
+			    If enabled, enforce a terminal editor.
+
+			--gui
+			    If enabled, enforce a gui editor.
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process, @todo rewrite with option_ prefix
+	local item dry='no' prompt='yes' wait='no' only_editor='no' sudo='no' terminal='' gui='' args=()
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'--no-dry'* | '--dry'*)
+			dry="$(get-flag-value --affirmative --fallback="$dry" -- "$item")"
+			;;
+		'--no-prompt'* | '--prompt'*)
+			prompt="$(get-flag-value --affirmative --fallback="$prompt" -- "$item")"
+			;;
+		'--no-wait'* | '--wait'*)
+			wait="$(get-flag-value --affirmative --fallback="$wait" -- "$item")"
+			;;
+		'--no-only-editor'* | '--only-editor'*)
+			only_editor="$(get-flag-value --affirmative --fallback="$only_editor" -- "$item")"
+			;;
+		'--no-sudo'* | '--sudo'*)
+			sudo="$(get-flag-value --affirmative --fallback="$sudo" -- "$item")"
+			;;
+		'--no-terminal'* | '--terminal'*)
+			terminal="$(get-flag-value --affirmative --fallback="$terminal" -- "$item")"
+			;;
+		'--no-gui'* | '--gui'*)
+			gui="$(get-flag-value --affirmative --fallback="$gui" -- "$item")"
+			;;
+		'--')
+			args+=("$@")
+			shift "$#"
+			break
+			;;
+		*)
+			args+=("$item" "$@")
+			shift "$#"
+			break
+			;;
+		esac
+	done
+
+	# check that terminal and gui are not both no
+	if [[ $terminal == 'no' && $gui == 'no' ]]; then
+		help "either [--terminal] or [--gui] must be enabled."
+	fi
+
+	# =====================================
+	# Configuration
+
+	source "$DOROTHY/sources/config.sh"
+
+	# editors.bash provides:
+	local TERMINAL_EDITORS=() GUI_EDITORS=()
+	load_dorothy_config 'editors.bash'
+
+	# check config
+	if [[ ${#TERMINAL_EDITORS[@]} -eq 0 ]]; then
+		echo-style --warning="TERMINAL_EDITORS was undefined" >/dev/stderr
+	fi
+	if [[ ${#GUI_EDITORS[@]} -eq 0 ]]; then
+		echo-style --warning="GUI_EDITORS was undefined" >/dev/stderr
+	fi
+
+	# =====================================
+	# Action
+
+	# determine the editors
+	local editors=()
+	if [[ -z $terminal && -z $gui ]]; then
+		# no terminal or gui preference, determine sensible defaults
+		if is-cursor; then
+			editors+=(cursor)
+			gui='yes'
+			terminal='yes'
+		elif is-vscode; then
+			# if running within vscode, add vscode as first preference
+			editors+=(code)
+			gui='yes'
+			terminal='yes'
+		elif is-ssh || is-headless; then
+			# if terminal, only use terminal editors
+			gui='no'
+			terminal='yes'
+		else
+			# if desktop, enable terminal and gui editors
+			gui='yes'
+			terminal='yes'
+		fi
+	fi
+	if [[ $gui == 'yes' ]]; then
+		# add the gui editors if desired
+		editors+=("${GUI_EDITORS[@]}")
+	fi
+	if [[ $terminal == 'yes' ]]; then
+		# add the terminal editors if desired
+		editors+=("${TERMINAL_EDITORS[@]}")
+	fi
+
+	# filter options by available
+	local array=() needle command
+	for needle in "${editors[@]}"; do
+		array=()
+		command="${needle%% *}"
+		if [[ -n $command ]]; then
+			if __command_exists -- "$command"; then
+				mapfile -t array < <(echo-split ' ' -- "$needle")
+
+				# absolute path so sudo has availability: may not actually be necessary
+				# array[0]="$(fs-absolute -- "${array[0]}")"
+
+				# handle fancy editors fancifully
+				case "$command" in
+				'cursor' | 'code')
+					# Both Cursor and VSCode use the same command-line arguments
+					if [[ $prompt == 'no' || $sudo == 'yes' ]]; then
+						continue
+					fi
+
+					if is-kde; then
+						# https://code.visualstudio.com/docs/editor/settings-sync#_recommended-configure-the-keyring-to-use-with-vs-code
+						if __command_missing -- kwalletmanager5; then
+							setup-util --quiet --cli=kwalletmanager5 APT='kwalletmanager'
+						fi
+						array+=('--password-store=gnome-libsecret') # kwallet5
+					fi
+
+					if [[ $wait == 'yes' ]]; then
+						array+=('-w')
+					fi
+
+					if is-wsl; then
+						array+=('--reuse-window')
+					else
+						# on wsl, --new-window causes git to wait forever to close the file
+						array+=('--new-window')
+					fi
+					;;
+				'atom' | 'subl' | 'zed')
+					if [[ $prompt == 'no' || $sudo == 'yes' ]]; then
+						continue
+					fi
+					if [[ $sudo == 'yes' ]]; then
+						continue
+					fi
+					if [[ $wait == 'yes' ]]; then
+						array+=('-w')
+					fi
+					;;
+				'emacs')
+					if [[ $prompt == 'no' ]]; then
+						continue
+					fi
+					array+=('--no-window-system')
+					;;
+				esac
+
+				# we have a suitable editor, leave the search
+				break
+			elif [[ $gui == 'yes' ]] && is-needle --needle="$needle" -- "${GUI_EDITORS[@]}" && get-app --quiet -- "$command"; then
+				# ignore gui editors that don't support sudo
+				if [[ $sudo == 'yes' && $command =~ ^(TextEdit)$ ]]; then
+					continue
+				fi
+				# apps require prompts
+				if [[ $prompt == 'yes' ]]; then
+					mapfile -t array < <(echo-split ' ' -- "$needle")
+					array=('open' '-a' "${array[@]}")
+					# we have a suitable editor, leave the search
+					break
+				fi
+			fi
+			# continue to the next editor
+		fi
+	done
+
+	# check editor
+	if [[ ${#array[@]} -eq 0 ]]; then
+		if [[ $dry == 'yes' ]] && is-ci; then
+			: # if running on ci, and if dry, then suppress error
+		elif [[ ${#array[@]} -ne 0 ]]; then
+			echo-style --error="$0: None of the configured editors were available:" >/dev/stderr
+			echo-verbose "${array[@]}" >/dev/stderr
+		fi
+		return 42 # ENOPROTOOPT 42 Protocol not available
+	fi
+
+	# only output the editor command
+	if [[ $only_editor != 'no' ]]; then
+		__print_lines "${array[0]}"
+		return
+	fi
+
+	# generate the entire command
+	local cmd=()
+	if [[ $sudo == 'yes' ]]; then
+		cmd+=(
+			'sudo-helper'
+			'--inherit'
+			'--'
+		)
+	fi
+	cmd+=("${array[@]}")
+	if [[ ${#args[@]} -ne 0 ]]; then
+		cmd+=("${args[@]}")
+	fi
+
+	# invoke
+	if [[ $dry == 'yes' ]]; then
+		# print a single line, with values space separated, such that [setup-git] works properly with [code --new-window]
+		__print_lines "${cmd[*]}"
+	else
+		"${cmd[@]}"
+	fi
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	edit_ "$@"
+fi

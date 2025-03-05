@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+function dorothy_() (
+	source "$DOROTHY/sources/bash.bash"
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Dorothy is a collection of shell scripts that make your system awesome.
+
+			USAGE:
+			dorothy [<command>] [--help|-h]
+
+			COMMANDS:
+			edit
+			    Edit the Dorothy repository.
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process
+	local item action=''
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'edit') action='edit' ;;
+		'--'*) help "An unrecognised flag was provided: $item" ;;
+		*) help "An unrecognised argument was provided: $item" ;;
+		esac
+	done
+
+	# =====================================
+	# Action
+
+	if [[ $action == 'edit' ]]; then
+		# pre-requisites
+		assert_dorothy_and_user_cloned
+
+		# action
+		echo-style --h1='Edit Dorothy'
+		# ensure_minimal_dependencies <-- if they are editing, then we assume they are already setup
+		ensure_permissions_configured
+		local editor="$(edit --dry --only-editor)"
+		if [[ "$editor" == 'code' || "$editor" == 'cursor' ]]; then
+			edit -- "$DOROTHY/.vscode/workspace.code-workspace"
+		else
+			edit -- "$DOROTHY"
+		fi
+	else
+		help "No command was provided."
+	fi
+
+	# Return
+	return 0
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	dorothy_ "$@"
+fi 

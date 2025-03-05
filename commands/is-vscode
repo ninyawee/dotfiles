@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+function is_vscode() (
+	source "$DOROTHY/sources/bash.bash"
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Checks if the environment is running within VSCode editor.
+
+			USAGE:
+			is-vscode
+
+			RETURNS:
+			[0] if the environment is within VSCode editor
+			[1] if the environment is not within VSCode editor
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process
+	local item
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'--'*) help "An unrecognised flag was provided: $item" ;;
+		*) help "An unrecognised argument was provided: $item" ;;
+		esac
+	done
+
+	# =====================================
+	# Action
+
+	if [[ ${TERM_PROGRAM-} == 'vscode' && ! is-cursor ]]; then
+		return 0
+	else
+		return 1
+	fi
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	is_vscode "$@"
+fi 

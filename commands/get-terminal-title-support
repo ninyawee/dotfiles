@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+function get_terminal_title_support() (
+	source "$DOROTHY/sources/bash.bash"
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Checks if the terminal supports title changes.
+
+			USAGE:
+			get-terminal-title-support [--quiet]
+
+			OPTIONS:
+			--quiet
+			    If enabled, don't output anything, just return the status code.
+
+			RETURNS:
+			[0] if the terminal supports title changes
+			[1] if the terminal does not support title changes
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process
+	local item option_quiet='no'
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'--quiet') option_quiet='yes' ;;
+		'--'*) help "An unrecognised flag was provided: $item" ;;
+		*) help "An unrecognised argument was provided: $item" ;;
+		esac
+	done
+
+	# =====================================
+	# Action
+
+	function __check {
+		is-ci || is-vscode-like
+	}
+
+	if [[ $option_quiet == 'yes' ]]; then
+		__check
+	else
+		if __check; then
+			echo 'yes'
+			return 0
+		else
+			echo 'no'
+			return 1
+		fi
+	fi
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	get_terminal_title_support "$@"
+fi 
