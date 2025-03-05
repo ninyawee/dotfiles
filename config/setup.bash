@@ -138,3 +138,29 @@ SETUP_UTILS=(
 	vim
 	zoxide
 )
+
+WINGET=(
+	'Docker.DockerDesktop'
+	'Kairos.DuetDisplay'
+	'Git.Git'
+	'Microsoft.PowerShell'
+	'Tailscale.Tailscale'
+	'Microsoft.Edge'
+	'Valve.Steam'
+	'AgileBits.1Password'
+	'Anysphere.Cursor'
+	'Notion.Notion'
+	'AgileBits.1Password.CLI'
+	'Discord.Discord'
+	'Figma.Figma'
+	'Figma.FigmaAgent'
+	'Obsidian.Obsidian'
+	'Microsoft.VisualStudioCode'
+	'Canonical.Ubuntu'
+	'Microsoft.Teams'
+	'Microsoft.AppInstaller'
+	'Microsoft.DevHome'
+	'Microsoft.WindowsTerminal'
+	'Microsoft.WSL'
+	'TheBrowserCompany.Arc'
+)
