@@ -163,4 +163,5 @@ WINGET=(
 	'Microsoft.WindowsTerminal'
 	'Microsoft.WSL'
 	'TheBrowserCompany.Arc'
+	'Microsoft.PowerToys'
 )
