@@ -1,0 +1,10 @@
+# dorothy directory
+/commands/
+/commands.local/
+/config/
+/config.local/
+/README.md
+
+# old references
+/chezmoi_files/
+

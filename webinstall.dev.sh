@@ -1,1 +1,0 @@
-curl -sS https://webi.sh/fd | sh

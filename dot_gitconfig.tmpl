@@ -1,0 +1,26 @@
+[user]
+	email = nutchanon@codustry.com
+	name = Nutchanon Ninyawee
+[pull]
+	rebase = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+{{ if eq .chezmoi.os "linux" }}
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+[credential "https://github.com"]
+	helper = 
+	helper = !/home/ben/.local/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/home/ben/.local/bin/gh auth git-credential
+[core]
+	sshCommand = ssh.exe
+[credential "https://dev.azure.com/"]
+	helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe
+	useHttpPath = true
+{{   end }}
+{{ end }}
