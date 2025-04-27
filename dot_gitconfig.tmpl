@@ -1,14 +1,9 @@
 [user]
 	name = Nutchanon Ninyawee
-	email = nutchanon@codustry.com
+	email = me@nutchanon.com
+
 [pull]
 	rebase = true
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-
 
 {{ if eq .chezmoi.os "linux" }}
 {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
