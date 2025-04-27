@@ -1,6 +1,6 @@
 [user]
-	email = nutchanon@codustry.com
 	name = Nutchanon Ninyawee
+	email = nutchanon@codustry.com
 [pull]
 	rebase = true
 [filter "lfs"]
@@ -8,6 +8,7 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+
 
 {{ if eq .chezmoi.os "linux" }}
 {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
@@ -24,3 +25,20 @@
 	useHttpPath = true
 {{   end }}
 {{ end }}
+
+[alias]
+	append = town append
+	compress = town compress
+	contribute = town contribute
+	diff-parent = town diff-parent
+	hack = town hack
+	delete = town delete
+	observe = town observe
+	park = town park
+	prepend = town prepend
+	propose = town propose
+	rename = town rename
+	repo = town repo
+	set-parent = town set-parent
+	ship = town ship
+	sync = town sync

@@ -3,7 +3,6 @@ node = "lts"
 just = "latest"
 rust = "latest"
 "cargo:xcp" = "latest"
-pipx = "latest"
 java = "latest"
 bun = "latest"
 "pipx:trash-cli" = "latest"
@@ -24,6 +23,14 @@ bat = "latest"
 "pipx:ttok" = "latest"
 watchexec = "latest"
 chezmoi = "latest"
+"ubi:cantino/mcfly" = "latest"
+usage = "latest"
+"ubi:git-town/git-town" = "latest"
+"cargo:exa" = "latest"
+"cargo:bat" = "latest"
+"npm:@postgrestools/postgrestools" = "latest"
+zellij = "latest"
+lazygit = "latest"
 
 [settings]
 experimental = true
@@ -31,3 +38,8 @@ experimental = true
 [settings.python]
 compile = true
 
+[settings.pipx]
+uvx = true
+
+[settings.npm]
+bun = true

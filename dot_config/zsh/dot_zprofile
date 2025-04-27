@@ -1,0 +1,4 @@
+
+eval "$(/home/ben/.local/bin/mise activate zsh --shims)"
+export PATH="/home/ben/.bun/bin:$PATH"
+export PATH="/home/ben/.atuin/bin:$PATH"
