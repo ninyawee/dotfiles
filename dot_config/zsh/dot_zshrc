@@ -19,12 +19,11 @@ alias cat='bat'
 # export ZELLIJ_AUTO_ATTACH=true
 eval "$(zellij setup --generate-auto-start zsh)"
 
-export PATH="/home/ben/.atuin/bin:$PATH"
-eval "$(atuin init zsh)"
+
 
 export PATH="/snap/bin:$PATH"
 export PATH="/home/ben/.bun/bin:$PATH"
-export VISUAL="cursor --wait"
+export VISUAL="code --wait"
 export EDITOR="micro"
 
 # export DOROTHY="/home/ben/.local/share/dorothy"
@@ -38,7 +37,6 @@ export EDITOR="micro"
 # eval "$(webi --init bash)"
 
 
-# eval "$(mcfly init bash)"
 
 # export PATH="$PATH:/home/ben/.modular/bin"
 
