@@ -1,0 +1,120 @@
+[env]
+sops_recipients = "age1g5k44garh308gqddyy0upn7dmnxcv5s9yhtf2n47axhmlm58m4lqq7hpd6"
+
+[tools]
+node = "lts"
+just = "latest"
+rust = "latest"
+"cargo:xcp" = "latest"
+java = "latest"
+bun = "latest"
+"pipx:trash-cli" = "latest"
+"cargo:mprocs" = "latest"
+gcloud = "latest"
+go = "latest"
+python = "3.12"
+poetry = "latest"
+mc = "latest"
+sops = "latest"
+age = "latest"
+"cargo:rops-cli" = "latest"
+pkl = "latest"
+hk = "latest"
+uv = "latest"
+bat = "latest"
+"pipx:ttok" = "latest"
+watchexec = "latest"
+chezmoi = "latest"
+usage = "latest"
+"ubi:git-town/git-town" = "latest"
+"cargo:bat" = "latest"
+zellij = "latest"
+lazygit = "latest"
+fd = "latest"
+"cargo:git-graph" = "latest"
+zoxide = "latest"
+fzf = "latest"
+"cargo:zesh" = "latest"
+sd = "latest"
+ripgrep = "latest"
+delta = "latest"
+lazydocker = "latest"
+"ubi:supabase-community/postgres-language-server" = "latest"
+television = "latest"
+eza = "latest"
+deno = "latest"
+duf = "latest"
+cargo-binstall = "latest"
+"cargo:du" = "latest"
+rclone = "latest"
+helix = "latest"
+"pipx:httpie" = "latest"
+"pipx:juv" = "latest"
+"ubi:supabase/cli" = {version = "latest", exe="supabase"}
+"pipx:aider-chat" = "latest"
+"cargo:cargo-binstall" = "latest"
+"cargo:ouch" = "latest"
+gh = "latest"
+"cargo:alacritty" = "latest"
+jj = "latest"
+"pipx:pgcli" = "latest"
+"cargo:tealdeer" = "latest"
+
+[settings]
+experimental = true
+idiomatic_version_file_enable_tools = []
+
+[settings.python]
+compile = true
+
+[settings.pipx]
+uvx = true
+
+[settings.npm]
+bun = true
+
+
+[tasks.encrypt]
+dir = "{{ cwd }}"
+run = """
+sops encrypt --age {{ env.sops_recipients }} {{ arg(name="file", default=".env") }} --output {{ arg(name="file", default=".env") }}.encrypted
+"""
+tools.sops = "latest"
+
+
+[tasks.decrypt]
+dir = "{{ cwd }}"
+run = """
+sops decrypt {{ arg(name="file", default=".env") }}.encrypted --output {{ arg(name="file", default=".env") }}
+"""
+
+[tasks."encrypt:all"]
+run = """
+find . -name '*.encrypt' -print0 | while IFS= read -r -d $'\\0' encrypted_file; do
+  # Remove the .encrypt suffix to get the base file path
+  base_file="${encrypted_file%.encrypt}"
+  # Check if the base file actually exists before trying to encrypt it
+  if [ -f "$base_file" ]; then
+    echo "Encrypting $base_file -> $encrypted_file"
+    # Run the encrypt task, passing the base file name
+    # Use -- to ensure the file argument is correctly parsed even if it starts with -
+    mise run encrypt -- "$base_file"
+  else
+    echo "Skipping $encrypted_file: Base file $base_file not found."
+  fi
+done
+"""
+description = "Find all *.encrypt files, infer the original filename, and re-encrypt them using the 'encrypt' task."
+tools.sops = "latest" # Ensure sops is available, similar to the encrypt task
+
+[tasks."decrypt:all"]
+run = """
+find . -name '*.encrypt' -print0 | while IFS= read -r -d $'\\0' encrypted_file; do
+  echo "Decrypting $encrypted_file"
+  # Run the decrypt task, passing the encrypted file name
+  # Use -- to ensure the file argument is correctly parsed even if it starts with -
+  mise run decrypt -- "$encrypted_file"
+done
+"""
+description = "Find all *.encrypt files and decrypt them using the 'decrypt' task."
+tools.sops = "latest" # Ensure sops is available, similar to the decrypt task
