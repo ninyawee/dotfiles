@@ -5,14 +5,14 @@
 # Used by `setup-server`
 
 # The utilities (if any) to be installed and configured for this server:
-# local SHARE_UTILS=(
-# 	# 'gocryptfs'
-# 	# 'nordvpn'
-# 	# 'plex'
-# 	# 'samba'
-# 	# 'syncthing'
-# 	# 'transmission'
-# )
+local SHARE_UTILS=(
+	# 'gocryptfs'
+	# 'nordvpn'
+	# 'plex'
+	# 'samba'
+	'syncthing'
+	'transmission'
+)
 
 # The username, group, and password for the user that will be created and associated with the services and mounts
 # local SHARE_USER='' SHARE_GROUP='' SHARE_PASSWORD=''
