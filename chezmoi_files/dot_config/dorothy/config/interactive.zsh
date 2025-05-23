@@ -51,11 +51,6 @@ if  mise list zoxide &> /dev/null; then
     eval "$($BIN init zsh)"
 fi
 
-if  mise list mcfly &> /dev/null; then
-    BIN=$(mise which mcfly)
-    eval "$($BIN init zsh)"
-fi
-
 
 if  mise list flutter &> /dev/null ; then
     export FLUTTER_ROOT="$(mise where flutter)"
