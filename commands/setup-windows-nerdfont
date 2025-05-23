@@ -1,0 +1,3 @@
+Install-Script -Name Invoke-NerdFontInstaller 
+
+Invoke-NerdFontInstaller 
