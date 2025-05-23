@@ -18,6 +18,14 @@
 [credential "https://dev.azure.com/"]
 	helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe
 	useHttpPath = true
+{{   else }}
+[credential]
+	helper = 
+	helper = /usr/local/bin/git-credential-manager
+	credentialStore = cache
+	cacheOptions = --timeout 604800
+[credential "https://dev.azure.com"]
+	useHttpPath = true
 {{   end }}
 {{ end }}
 
@@ -37,3 +45,12 @@
 	set-parent = town set-parent
 	ship = town ship
 	sync = town sync
+
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+[merge]
+	conflictStyle = zdiff3
