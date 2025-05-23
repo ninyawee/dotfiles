@@ -1,0 +1,6 @@
+[[language]]
+name = "svelte"
+auto-format = true
+language-servers = [ { name = "tailwindcss-ls", except-features = ["hover"] }, "svelteserver", "emmet-ls", "eslint-ls" ]
+formatter = { command = "prettier", args = ["--parser", "html"]}
+
