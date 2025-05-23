@@ -188,4 +188,6 @@ WINGET=(
 	'Microsoft.AzureStorageExplorer'
 	'NSIS.NSIS'
 	'Anaconda.Miniconda3'
+	'Levitsky.FontBase'
+	'DEVCOM.JetBrainsMonoNerdFont'
 )
