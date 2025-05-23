@@ -14,8 +14,5 @@ if ! command -v mise &> /dev/null; then
 fi
 
 
-$mise_BIN plugin add mcfly https://github.com/barolab/asdf-mcfly.git
-$mise_BIN plugin add lazydocker https://github.com/comdotlinux/asdf-lazydocker.git
-
 echo "Please run `mise i` to install all the packages in ~/.tool-versions"
 {{ end -}}
