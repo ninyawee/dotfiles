@@ -9,7 +9,9 @@
 # Apt / apt-get
 # Used by `setup-linux`
 # APT_UNINSTALL=()
-# APT_INSTALL=()
+APT_INSTALL=(
+	'usbutils'
+)
 
 # AUR / pamac / pacman / yay / paru / pakku / aurutils
 # Used by `setup-linux`
@@ -103,44 +105,45 @@ HOMEBREW_FONTS=(
 # Utilities to install, these are the [setup-util-*] scripts
 # Used by `setup-utils`
 # You can use `setup-utils --configure` to configure these.
-SETUP_UTILS=(
-	apt
-	bat
-	bottom
-	brew
-	curl
-	delta
-	devel
-	dust
-	eza
-	fd
-	file
-	fzf
-	git
-	gum
-	httpie
-	jq
-	lux
-	mas
-	micro
-	nano
-	nerd-fonts
-	netstat
-	procs
-	ripgrep
-	sd
-	shellcheck
-	shfmt
-	starship
-	tealdeer
-	tokei
-	tree
-	vim
-	zoxide
-)
+# SETUP_UTILS=(
+# 	apt
+# 	bat
+# 	bottom
+# 	brew
+# 	curl
+# 	delta
+# 	devel
+# 	dust
+# 	eza
+# 	fd
+# 	file
+# 	fzf
+# 	git
+# 	gum
+# 	httpie
+# 	jq
+# 	lux
+# 	mas
+# 	# micro
+# 	# nano
+# 	nerd-fonts
+# 	netstat
+# 	procs
+# 	ripgrep
+# 	sd
+# 	shellcheck
+# 	shfmt
+# 	starship
+# 	tealdeer
+# 	tokei
+# 	tree
+# 	vim
+# 	zoxide
+# )
 
 WINGET=(
 	'Microsoft.WSL'
+	'Canonical.Ubuntu'
 	'Docker.DockerDesktop'
 	'Kairos.DuetDisplay'
 	'Git.Git'
@@ -154,21 +157,19 @@ WINGET=(
 	'AgileBits.1Password.CLI'
 	'Discord.Discord'
 	'Figma.Figma'
-	'Figma.FigmaAgent'
 	'Obsidian.Obsidian'
 	'Microsoft.VisualStudioCode'
 	'Canonical.Ubuntu'
 	'Microsoft.Teams'
-	'Microsoft.AppInstaller'
 	'Microsoft.DevHome'
 	'Microsoft.WindowsTerminal'
 	'TheBrowserCompany.Arc'
 	'Microsoft.PowerToys'
 	'Google.AndroidStudio'
 	'GitHub.cli'
+	'Zen-Team.Zen-Browser'
 	'Python.Launcher'
 	'astral-sh.uv'
-	'Axosoft.GitKraken'
 	'HTTPie.HTTPie'
 	'jdx.mise'
 	'7zip.7zip'
