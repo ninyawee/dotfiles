@@ -62,6 +62,9 @@ matches:
   - trigger: "cye "
     replace: "can you explain? "
 
+  - trigger: ":ty "
+    replace: "Thank you very much! "
+
   # NOTE: espanso uses YAML to define matches, so pay attention to the indentation!
 
   # But matches can also be dynamic:
