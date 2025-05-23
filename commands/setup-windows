@@ -1,0 +1,276 @@
+#!/usr/bin/env bash
+
+function setup_windows() (
+	source "$DOROTHY/sources/bash.bash"
+	__require_array 'mapfile'
+	source "$(type -P eval-helper)"
+
+	# =====================================
+	# Arguments
+
+	function help {
+		cat <<-EOF >/dev/stderr
+			ABOUT:
+			Configure Windows (via WSL) to our expectations.
+
+			USAGE:
+			setup-windows <install|update|clean>
+		EOF
+		if [[ $# -ne 0 ]]; then
+			echo-error "$@"
+		fi
+		return 22 # EINVAL 22 Invalid argument
+	}
+
+	# process
+	local item action=''
+	while [[ $# -ne 0 ]]; do
+		item="$1"
+		shift
+		case "$item" in
+		'--help' | '-h') help ;;
+		'--'*) help "An unrecognised flag was provided: $item" ;;
+		*)
+			if [[ -z $action ]]; then
+				action="$item"
+			else
+				help "An unrecognised argument was provided: $item"
+			fi
+			;;
+		esac
+	done
+
+	# assert compatibility
+	if ! is-wsl; then
+		help 'This command is only purposeful on WSL systems, which you are not running.'
+	fi
+
+	# assert action
+	if [[ -z $action ]]; then
+		help "No action provided."
+	fi
+
+	# generate log title
+	local title
+	title="$(__uppercase_first_letter -- "$action") Windows"
+
+	# =====================================
+	# Configuration
+
+	source "$DOROTHY/sources/config.sh"
+
+	# setup.bash provides:
+	local WINGET=()
+	local SCOOP=()
+	local CHOCO=()
+	load_dorothy_config 'setup.bash'
+
+	# adjustments
+	mapfile -t WINGET < <(dorothy-config --packages-var='WINGET' -- "${WINGET[@]}")
+	mapfile -t SCOOP < <(dorothy-config --packages-var='SCOOP' -- "${SCOOP[@]}")
+	mapfile -t CHOCO < <(dorothy-config --packages-var='CHOCO' -- "${CHOCO[@]}")
+
+	# =====================================
+	# Helpers
+
+	# Winget
+	# https://docs.microsoft.com/en-us/windows/package-manager/winget/
+
+	function do_winget_update {
+		if __command_missing -- winget.exe; then
+			return 0
+		fi
+		winget.exe source update
+	}
+
+	function do_winget_upgrade {
+		if __command_missing -- winget.exe; then
+			return 0
+		fi
+		winget.exe upgrade --all --accept-package-agreements --accept-source-agreements
+	}
+
+	function do_winget_packages {
+		setup-util --installer=WINGET -- "${WINGET[@]}"
+	}
+
+	function do_winget_clean {
+		# Winget doesn't have a built-in clean command
+		# Could potentially clear the cache at %LOCALAPPDATA%\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState
+		return 0
+	}
+
+	# Scoop
+	# https://scoop.sh/
+
+	function do_scoop_update {
+		if __command_missing -- scoop; then
+			return 0
+		fi
+		scoop update
+	}
+
+	function do_scoop_upgrade {
+		if __command_missing -- scoop; then
+			return 0
+		fi
+		scoop update
+		scoop update --all
+	}
+
+	function do_scoop_packages {
+		setup-util --installer=SCOOP -- "${SCOOP[@]}"
+	}
+
+	function do_scoop_clean {
+		if __command_missing -- scoop; then
+			return 0
+		fi
+		scoop cleanup --all
+		scoop cache rm --all
+	}
+
+	# Chocolatey
+	# https://chocolatey.org/
+
+	function do_choco_update {
+		if __command_missing -- choco; then
+			return 0
+		fi
+		choco outdated
+	}
+
+	function do_choco_upgrade {
+		if __command_missing -- choco; then
+			return 0
+		fi
+		choco upgrade all -y
+	}
+
+	function do_choco_packages {
+		setup-util --installer=CHOCO -- "${CHOCO[@]}"
+	}
+
+	function do_choco_clean {
+		if __command_missing -- choco; then
+			return 0
+		fi
+		# Clean up download cache
+		if [[ -d "$LOCALAPPDATA/Temp/chocolatey" ]]; then
+			rm -rf "$LOCALAPPDATA/Temp/chocolatey"
+		fi
+	}
+
+	# -------------------------------------
+	# Update References
+
+	local updates=(
+		'winget'
+		'scoop'
+		'choco'
+	)
+
+	# -------------------------------------
+	# Upgrade Packages
+
+	local upgrades=(
+		'winget'
+		'scoop'
+		'choco'
+	)
+
+	# -------------------------------------
+	# Install Packages
+
+	local packages=(
+		'winget'
+		'scoop'
+		'choco'
+	)
+
+	# -------------------------------------
+	# Clean System
+
+	local clean=(
+		'winget'
+		'scoop'
+		'choco'
+	)
+
+	# =====================================
+	# Action
+
+	# prepare
+	local item
+
+	# action
+	if [[ $action == 'clean' ]]; then
+		# clean ecosystems
+		for item in "${clean[@]}"; do
+			if __command_exists -- "$item" || [[ $item == 'winget' && -n $(command -v winget.exe) ]]; then
+				eval_helper --shapeshifter --no-wrap \
+					--pending="$(echo-style --bold="Cleaning $item...")" \
+					--success="$(echo-style --success="Cleaned $item.")" \
+					--failure="$(echo-style --error="Failed to clean $item.")" \
+					-- "do_${item}_clean"
+			fi
+		done
+	elif [[ $action =~ ^(install|update)$ ]]; then
+		# log
+		echo-style --h1="$title"
+
+		# update references
+		for item in "${updates[@]}"; do
+			if __command_exists -- "$item" || [[ $item == 'winget' && -n $(command -v winget.exe) ]]; then
+				eval_helper --shapeshifter --no-wrap \
+					--pending="$(echo-style --bold="Updating references of $item...")" \
+					--success="$(echo-style --success="Updated references of $item.")" \
+					--failure="$(echo-style --error="Failed to update references of $item.")" \
+					-- "do_${item}_update"
+			fi
+		done
+
+		# install package managers
+		if [[ $action == 'install' ]]; then
+			# Winget is usually pre-installed on Windows 10/11
+			# TODO: Add scoop and chocolatey installation if needed
+			: # placeholder
+		fi
+
+		# upgrade all packages
+		if confirm --linger --positive --ppid=$$ -- 'Upgrade existing packages?'; then
+			for item in "${upgrades[@]}"; do
+				if __command_exists -- "$item" || [[ $item == 'winget' && -n $(command -v winget.exe) ]]; then
+					eval_helper --shapeshifter --no-wrap \
+						--pending="$(echo-style --bold="Upgrading packages of $item...")" \
+						--success="$(echo-style --success="Upgraded packages of $item.")" \
+						--failure="$(echo-style --error="Failed to upgrade packages of $item.")" \
+						-- "do_${item}_upgrade"
+				fi
+			done
+		fi
+
+		# setup user packages
+		for item in "${packages[@]}"; do
+			if __command_exists -- "$item" || [[ $item == 'winget' && -n $(command -v winget.exe) ]]; then
+				eval_helper --shapeshifter --no-wrap \
+					--pending="$(echo-style --bold="Installing packages of $item...")" \
+					--success="$(echo-style --success="Installed packages of $item.")" \
+					--failure="$(echo-style --error="Failed to install packages of $item.")" \
+					-- "do_${item}_packages"
+			fi
+		done
+
+		# log
+		echo-style --g1="$title"
+	else
+		# unknown action
+		help "An unrecognised action was provided: $action"
+	fi
+
+)
+
+# fire if invoked standalone
+if [[ $0 == "${BASH_SOURCE[0]}" ]]; then
+	setup_windows "$@"
+fi
