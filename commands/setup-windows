@@ -91,7 +91,29 @@ function setup_windows() (
 	}
 
 	function do_winget_packages {
-		setup-util --installer=WINGET -- "${WINGET[@]}"
+		local package failed_packages=() success_count=0 fail_count=0
+		for package in "${WINGET[@]}"; do
+			if [[ -n $package ]]; then
+				echo-style --dim="Installing $package..."
+				if setup-util --installer=WINGET -- "$package"; then
+					((success_count++))
+				else
+					failed_packages+=("$package")
+					((fail_count++))
+				fi
+			fi
+		done
+		
+		# Report results
+		if [[ $success_count -gt 0 ]]; then
+			echo-style --success="Successfully installed $success_count packages."
+		fi
+		if [[ $fail_count -gt 0 ]]; then
+			echo-style --error="Failed to install $fail_count packages:"
+			printf '%s\n' "${failed_packages[@]}" | sed 's/^/  - /' >&2
+			return 1
+		fi
+		return 0
 	}
 
 	function do_winget_clean {
