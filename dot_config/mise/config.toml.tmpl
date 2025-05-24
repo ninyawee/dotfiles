@@ -1,86 +1,124 @@
 [env]
 sops_recipients = "age1g5k44garh308gqddyy0upn7dmnxcv5s9yhtf2n47axhmlm58m4lqq7hpd6"
 
+# ============================================================================
+# Tools Configuration
+# ============================================================================
+
 [tools]
+# ----------------------------------------------------------------------------
 # Programming Languages & Runtimes
-rust = "latest"
-python = "3.12"
-node = "lts"
+# ----------------------------------------------------------------------------
+bun = "latest"
+deno = "latest"
 go = "latest"
 java = "latest"
-deno = "latest"
-bun = "latest"
+node = "lts"
+python = "3.12"
+rust = "latest"
 
+# ----------------------------------------------------------------------------
 # Package Managers & Build Tools
+# ----------------------------------------------------------------------------
 cargo-binstall = "latest"
+just = "latest"
 poetry = "latest"
 uv = "latest"
-just = "latest"
 
+# ----------------------------------------------------------------------------
 # Version Control & Git Tools
+# ----------------------------------------------------------------------------
+"cargo:git-graph" = "latest"
+delta = "latest"
 gh = "latest"
 jj = "latest"
 lazygit = "latest"
-delta = "latest"
 "ubi:git-town/git-town" = "latest"
-"cargo:git-graph" = "latest"
 
+# ----------------------------------------------------------------------------
 # Cloud & Infrastructure
-"ubi:supabase/cli" = {version = "latest", exe="supabase"}
-"ubi:supabase-community/postgres-language-server" = "latest"
+# ----------------------------------------------------------------------------
+lazydocker = "latest"
 mc = "latest"
 rclone = "latest"
-lazydocker = "latest"
+"ubi:supabase/cli" = {version = "latest", exe="supabase"}
+"ubi:supabase-community/postgres-language-server" = "latest"
 
+# ----------------------------------------------------------------------------
 # Security & Encryption
-sops = "latest"
+# ----------------------------------------------------------------------------
 age = "latest"
 "cargo:rops-cli" = "latest"
+sops = "latest"
 
+# ----------------------------------------------------------------------------
 # File Management & Search
-fd = "latest"
-ripgrep = "latest"
-eza = "latest"
-zoxide = "latest"
-fzf = "latest"
+# ----------------------------------------------------------------------------
 bat = "latest"
-"cargo:bat" = "latest"
+eza = "latest"
+fd = "latest"
+fzf = "latest"
+ripgrep = "latest"
 "pipx:trash-cli" = "latest"
 "cargo:xcp" = "latest"
+zoxide = "latest"
 
+# ----------------------------------------------------------------------------
 # System Monitoring & Info
+# ----------------------------------------------------------------------------
 duf = "latest"
 "cargo:du" = "latest"
+"pipx:ttok" = "latest"
 usage = "latest"
 watchexec = "latest"
-"pipx:ttok" = "latest"
 
+# ----------------------------------------------------------------------------
 # Text Processing & Editing
+# ----------------------------------------------------------------------------
 helix = "latest"
 sd = "latest"
 "cargo:tealdeer" = "latest"
 
+# ----------------------------------------------------------------------------
 # Terminal & Multiplexers
-zellij = "latest"
-television = "latest"
+# ----------------------------------------------------------------------------
 "cargo:mprocs" = "latest"
+television = "latest"
+zellij = "latest"
 "cargo:zesh" = "latest"
 
+# ----------------------------------------------------------------------------
 # Development Tools
+# ----------------------------------------------------------------------------
 "pipx:aider-chat" = "latest"
 "pipx:httpie" = "latest"
 "pipx:pgcli" = "latest"
 
+# ----------------------------------------------------------------------------
 # Configuration Management
+# ----------------------------------------------------------------------------
 chezmoi = "latest"
 
+# ----------------------------------------------------------------------------
 # Archive & Compression
+# ----------------------------------------------------------------------------
 "cargo:ouch" = "latest"
 
-# Others
-pkl = "latest"
+# ----------------------------------------------------------------------------
+# Shell & Prompts
+# ----------------------------------------------------------------------------
+starship = "latest"
+
+# ----------------------------------------------------------------------------
+# Miscellaneous
+# ----------------------------------------------------------------------------
 hk = "latest"
 "pipx:juv" = "latest"
+pkl = "latest"
+
+# ============================================================================
+# Settings
+# ============================================================================
 
 [settings]
 experimental = true

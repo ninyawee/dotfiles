@@ -1,0 +1,1 @@
+format this @dot_config/mise/config.toml.tmpl into good section for tools
