@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "ls:*",
+      "grep:*",
+      "rg:*",
+      "cat:*",
+      "head:*",
+      "tail:*",
+      "find:*",
+      "wc:*",
+      "WebFetch"
+    ],
+    "deny": [
+      "sudo:*"
+    ]
+  }
+}
