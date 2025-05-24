@@ -2,63 +2,87 @@
 sops_recipients = "age1g5k44garh308gqddyy0upn7dmnxcv5s9yhtf2n47axhmlm58m4lqq7hpd6"
 
 [tools]
-node = "lts"
-just = "latest"
+# Programming Languages & Runtimes
 rust = "latest"
-"cargo:xcp" = "latest"
-java = "latest"
-bun = "latest"
-"pipx:trash-cli" = "latest"
-"cargo:mprocs" = "latest"
-gcloud = "latest"
-go = "latest"
 python = "3.12"
+node = "lts"
+go = "latest"
+java = "latest"
+deno = "latest"
+bun = "latest"
+
+# Package Managers & Build Tools
+cargo-binstall = "latest"
+"cargo:cargo-binstall" = "latest"
 poetry = "latest"
+uv = "latest"
+just = "latest"
+
+# Version Control & Git Tools
+gh = "latest"
+jj = "latest"
+lazygit = "latest"
+delta = "latest"
+"ubi:git-town/git-town" = "latest"
+"cargo:git-graph" = "latest"
+
+# Cloud & Infrastructure
+gcloud = "latest"
+"ubi:supabase/cli" = {version = "latest", exe="supabase"}
+"ubi:supabase-community/postgres-language-server" = "latest"
 mc = "latest"
+rclone = "latest"
+lazydocker = "latest"
+
+# Security & Encryption
 sops = "latest"
 age = "latest"
 "cargo:rops-cli" = "latest"
-pkl = "latest"
-hk = "latest"
-uv = "latest"
-bat = "latest"
-"pipx:ttok" = "latest"
-watchexec = "latest"
-chezmoi = "latest"
-usage = "latest"
-"ubi:git-town/git-town" = "latest"
-"cargo:bat" = "latest"
-zellij = "latest"
-lazygit = "latest"
+
+# File Management & Search
 fd = "latest"
-"cargo:git-graph" = "latest"
+ripgrep = "latest"
+eza = "latest"
 zoxide = "latest"
 fzf = "latest"
-"cargo:zesh" = "latest"
-sd = "latest"
-ripgrep = "latest"
-delta = "latest"
-lazydocker = "latest"
-"ubi:supabase-community/postgres-language-server" = "latest"
-television = "latest"
-eza = "latest"
-deno = "latest"
+bat = "latest"
+"cargo:bat" = "latest"
+"pipx:trash-cli" = "latest"
+"cargo:xcp" = "latest"
+
+# System Monitoring & Info
 duf = "latest"
-cargo-binstall = "latest"
 "cargo:du" = "latest"
-rclone = "latest"
+usage = "latest"
+watchexec = "latest"
+"pipx:ttok" = "latest"
+
+# Text Processing & Editing
 helix = "latest"
-"pipx:httpie" = "latest"
-"pipx:juv" = "latest"
-"ubi:supabase/cli" = {version = "latest", exe="supabase"}
-"pipx:aider-chat" = "latest"
-"cargo:cargo-binstall" = "latest"
-"cargo:ouch" = "latest"
-gh = "latest"
-"cargo:alacritty" = "latest"
-jj = "latest"
-"pipx:pgcli" = "latest"
+sd = "latest"
 "cargo:tealdeer" = "latest"
+
+# Terminal & Multiplexers
+zellij = "latest"
+television = "latest"
+"cargo:mprocs" = "latest"
+"cargo:zesh" = "latest"
+
+# Development Tools
+"pipx:aider-chat" = "latest"
+"pipx:httpie" = "latest"
+"pipx:pgcli" = "latest"
+
+# Configuration Management
+chezmoi = "latest"
+
+# Archive & Compression
+"cargo:ouch" = "latest"
+
+# Others
+pkl = "latest"
+hk = "latest"
+"pipx:juv" = "latest"
 
 [settings]
 experimental = true
