@@ -1,0 +1,4 @@
+["theme.yml"]
+type = "file"
+url = "https://raw.githubusercontent.com/eza-community/eza-themes/main/themes/tokyonight.yml"
+refreshPeriod = "168h"

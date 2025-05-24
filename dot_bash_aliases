@@ -10,6 +10,11 @@ alias gs='git status'
 
 alias c='claude'
 
+alias ls='eza'
+alias ll='eza -l'
+alias la='eza -la'
+alias l='eza -l'
+
 alias cm="chezmoi"
 alias cea='chezmoi edit --apply'
 alias cma='chezmoi apply'
