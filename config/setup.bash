@@ -61,7 +61,9 @@ APT_INSTALL=(
 # You can use `setup-mac-brew --configure` to configure some of these.
 # HOMEBREW_UNTAPS=()
 # HOMEBREW_TAPS=()
-# HOMEBREW_FORMULAS=()
+HOMEBREW_FORMULAS=(
+	'jandedobbeleer/oh-my-posh/oh-my-posh'
+)
 # HOMEBREW_SLOW_FORMULAS=()
 # HOMEBREW_CASKS=()
 HOMEBREW_FONTS=(
@@ -123,7 +125,29 @@ HOMEBREW_FONTS=(
 # Used by `setup-utils`
 # You can use `setup-utils --configure` to configure these.
 SETUP_UTILS=(
+	# bottom
+	brew
 	devel
+	# dust
+	# git
+	# gum
+	# lux
+	# mas
+	# micro
+	# nano
+	# nerd-fonts
+	# netstat
+	# procs
+	# ripgrep
+	# sd
+	# shellcheck
+	# shfmt
+	# starship
+	# tealdeer
+	# tokei
+	# tree
+	# vim
+	# zoxide
 )
 
 WINGET=(
