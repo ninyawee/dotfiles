@@ -10,6 +10,8 @@ alias gs='git status'
 
 alias c='claude'
 
+alias cm="chezmoi"
+alias cea='chezmoi edit --apply'
 
 # try until last command succeeds
 alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
