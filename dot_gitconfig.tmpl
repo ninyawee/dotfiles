@@ -9,10 +9,10 @@
 {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 [credential "https://github.com"]
 	helper = 
-	helper = !/home/ben/.local/bin/gh auth git-credential
+	helper = !{{ lookPath "gh" }} auth git-credential
 [credential "https://gist.github.com"]
 	helper = 
-	helper = !/home/ben/.local/bin/gh auth git-credential
+	helper = !{{ lookPath "gh" }} auth git-credential
 [core]
 	sshCommand = ssh.exe
 [credential "https://dev.azure.com/"]
