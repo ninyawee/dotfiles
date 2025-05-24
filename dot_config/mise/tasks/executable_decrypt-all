@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#MISE description="Find all *.encrypt files and decrypt them using the 'decrypt' task"
+#MISE alias="decrypt:all"
+
+find . -name '*.encrypt' -print0 | while IFS= read -r -d $'\0' encrypted_file; do
+  echo "Decrypting $encrypted_file"
+  # Run the decrypt task, passing the encrypted file name
+  mise run decrypt "$encrypted_file"
+done

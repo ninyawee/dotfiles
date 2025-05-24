@@ -9,7 +9,8 @@
       "tail:*",
       "find:*",
       "wc:*",
-      "WebFetch"
+      "WebFetch",
+      "mcp__context7__resolve-library-id"
     ],
     "deny": [
       "sudo:*"

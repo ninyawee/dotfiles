@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Decrypt a .encrypted file using sops"
+#MISE dir="{{cwd}}"
+
+sops decrypt "${1:-.env}.encrypted" --output "${1:-.env}"

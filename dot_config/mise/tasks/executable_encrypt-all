@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#MISE description="Find all *.encrypt files, infer the original filename, and re-encrypt them using the 'encrypt' task"
+#MISE alias="encrypt:all"
+
+find . -name '*.encrypt' -print0 | while IFS= read -r -d $'\0' encrypted_file; do
+  # Remove the .encrypt suffix to get the base file path
+  base_file="${encrypted_file%.encrypt}"
+  # Check if the base file actually exists before trying to encrypt it
+  if [ -f "$base_file" ]; then
+    echo "Encrypting $base_file -> $encrypted_file"
+    # Run the encrypt task, passing the base file name
+    mise run encrypt "$base_file"
+  else
+    echo "Skipping $encrypted_file: Base file $base_file not found."
+  fi
+done

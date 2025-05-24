@@ -1,0 +1,15 @@
+export APPLIED_BASHALIAS=1
+
+alias f='fzf'
+alias fm='fzf -m'
+alias fp='fzf -m --preview "bat --color=always --style=header,grid --line-range :500 {}"'
+alias fpp='fzf -m --preview "bat --color=always --style=header,grid --line-range :500 {}" --preview-window=right:70%'
+
+alias g='git'
+alias gs='git status'
+
+alias c='claude'
+
+
+# try until last command succeeds
+alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
