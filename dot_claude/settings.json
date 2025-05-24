@@ -9,8 +9,11 @@
       "tail:*",
       "find:*",
       "wc:*",
+      "which:*",
+      "echo:*",
       "WebFetch",
-      "mcp__context7__resolve-library-id"
+      "mcp__context7__resolve-library-id",
+      "mcp__postgres__query"
     ],
     "deny": [
       "sudo:*"
