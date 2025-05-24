@@ -10,7 +10,24 @@
 # Used by `setup-linux`
 # APT_UNINSTALL=()
 APT_INSTALL=(
-	'usbutils'
+	gdb
+	lcov
+	libbz2-dev
+	libffi-dev
+	libgdbm-compat-dev
+	libgdbm-dev
+	liblzma-dev
+	# libmpdec-dev
+	libncurses5-dev
+	libreadline6-dev
+	libsqlite3-dev
+	libzstd-dev
+	lzma
+	lzma-dev
+	tk-dev
+	usbutils
+	uuid-dev
+	zlib1g-dev
 )
 
 # AUR / pamac / pacman / yay / paru / pakku / aurutils
@@ -105,41 +122,9 @@ HOMEBREW_FONTS=(
 # Utilities to install, these are the [setup-util-*] scripts
 # Used by `setup-utils`
 # You can use `setup-utils --configure` to configure these.
-# SETUP_UTILS=(
-# 	apt
-# 	bat
-# 	bottom
-# 	brew
-# 	curl
-# 	delta
-# 	devel
-# 	dust
-# 	eza
-# 	fd
-# 	file
-# 	fzf
-# 	git
-# 	gum
-# 	httpie
-# 	jq
-# 	lux
-# 	mas
-# 	# micro
-# 	# nano
-# 	nerd-fonts
-# 	netstat
-# 	procs
-# 	ripgrep
-# 	sd
-# 	shellcheck
-# 	shfmt
-# 	starship
-# 	tealdeer
-# 	tokei
-# 	tree
-# 	vim
-# 	zoxide
-# )
+SETUP_UTILS=(
+	devel
+)
 
 WINGET=(
 	'Microsoft.WSL'
