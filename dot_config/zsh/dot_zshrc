@@ -13,7 +13,7 @@ source <(fzf --zsh)
 export PATH="/snap/bin:$PATH"
 export PATH="/home/ben/.bun/bin:$PATH"
 
-source '/home/ben/.local/share/dorothy/init.sh' # Dorothy
+# source '/home/ben/.local/share/dorothy/init.sh' # Dorothy
 # export DOROTHY="/home/ben/.local/share/dorothy"
 # export PATH="/home/ben/.local/share/dorothy/commands:/home/ben/.config/dorothy/commands:/home/ben/.local/share/dorothy/commands.beta:$PATH"
 
