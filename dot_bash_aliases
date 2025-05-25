@@ -20,5 +20,8 @@ alias cea='chezmoi edit --apply'
 alias cma='chezmoi apply'
 alias cme='chezmoi edit'
 
+alias z='zellij'
+alias za='zellij attach'
+
 # try until last command succeeds
 alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
