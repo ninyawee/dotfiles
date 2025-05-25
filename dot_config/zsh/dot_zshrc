@@ -1,29 +1,28 @@
-autoload -U compinit
-compinit
-
-
 eval "$(/home/ben/.local/bin/mise activate zsh)"
 eval "$(mise completion zsh)"
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-eval "$(oh-my-posh init zsh --config ~/.config/zsh/theme.omp.json)"
+eval "$(starship init zsh)"
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# export ZELLIJ_AUTO_ATTACH=true
-eval "$(zellij setup --generate-auto-start zsh)"
-
 
 source <(fzf --zsh)
 export PATH="/snap/bin:$PATH"
 export PATH="/home/ben/.bun/bin:$PATH"
-export VISUAL="code --wait"
-export EDITOR="micro"
 
+source '/home/ben/.local/share/dorothy/init.sh' # Dorothy
 # export DOROTHY="/home/ben/.local/share/dorothy"
 # export PATH="/home/ben/.local/share/dorothy/commands:/home/ben/.config/dorothy/commands:/home/ben/.local/share/dorothy/commands.beta:$PATH"
+
+
+export EDITOR="micro"
+
+ if [[ -n "$VSCODE_INJECTION" ]] && command -v code >/dev/null; then
+      export VISUAL="code --wait"
+  fi
 
 
 # Generated for envman. Do not edit.
@@ -37,7 +36,6 @@ export EDITOR="micro"
 export PATH="$PATH:/home/ben/.modular/bin"
 
 
-alias e="edit"
 
 # $(pitchfork activate bash)
 
@@ -52,10 +50,11 @@ fi
 
 # rclone
 if [ -x "$(command -v rclone)" ]; then
-    eval "$(rclone completion zsh)"
+	# 2025/05/25 11:45:28 CRITICAL: open /usr/share/zsh/vendor-completions/_rclone: permission denied
+	# it tries and error
+    # eval "$(rclone completion zsh)"
 fi
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 bindkey '^H' backward-kill-word
 
@@ -73,3 +72,17 @@ export FZF_DEFAULT_OPTS="--ansi"
 # -
 # -alias claude="/home/ben/.claude/local/claude"
 # -export POSTGRESTOOLS_BINARY="/home/ben/Devs/Tools/postgrestools"
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.config/zsh/.histfile
+HISTSIZE=10000
+SAVEHIST=10000000
+setopt beep notify
+unsetopt autocd
+bindkey -e
+# End of lines configured by zsh-newuser-install
+# The following lines were added by compinstall
+zstyle :compinstall filename '/home/ben/.config/zsh/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
