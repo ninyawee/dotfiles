@@ -112,7 +112,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-source "/home/ben/.local/share/dorothy/init.sh" # Dorothy
+# source "/home/ben/.local/share/dorothy/init.sh" # Dorothy
 
 eval "$(/home/ben/.local/bin/mise activate bash)"
 # eval "$(mise completion bash --include-bash-completion-lib)"
