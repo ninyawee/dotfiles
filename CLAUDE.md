@@ -3,14 +3,11 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-This is a Dorothy dotfiles repository - a sophisticated shell configuration ecosystem managed with chezmoi. Dorothy provides a framework for managing shell environments, custom commands, and system configurations across multiple platforms (Linux, macOS, Windows/WSL2).
+ - a sophisticated shell configuration ecosystem managed with chezmoi. Dorothy provides a custom commands, and system configurations across multiple platforms (Linux, macOS, Windows/WSL2).
 
 ## Build/Lint/Test Commands
-- PowerShell tests: `Invoke-Pester .` (from within test directory)
-- Run specific test: `Invoke-Pester -Path ./path/to/test_file.ps1`
 - Apply dotfile changes: `chezmoi apply`
 - Preview changes: `chezmoi diff`
-- Dorothy commands are in `commands/` and are directly executable
 
 ## Architecture & Structure
 - **commands/**: Custom Dorothy commands (executable scripts)
@@ -34,11 +31,6 @@ This is a Dorothy dotfiles repository - a sophisticated shell configuration ecos
 - Use double quotes for string interpolation, single quotes otherwise
 - PowerShell functions should use PascalCase (e.g., `Add-1PassFileOrFolder`)
 
-## Dorothy-Specific Patterns
-- Commands should be self-contained executable scripts
-- Use Dorothy's built-in utilities where available (e.g., `setup-util-*` pattern)
-- Configuration files in `config/` are sourced automatically by Dorothy
-- Follow the `setup-*` naming pattern for installation scripts
 
 ## Chezmoi Template Variables
 - Templates can access chezmoi variables (e.g., `{{ .chezmoi.os }}`)
@@ -53,5 +45,16 @@ This is a Dorothy dotfiles repository - a sophisticated shell configuration ecos
 - Atuin for shell history management
 
 ## Repository Paths
-- Dorothy root is located at `/home/ben/.local/share/dorothy/`
-- Example: `setup-util` command is located at `/home/ben/.local/share/dorothy/commands/setup-util`
+
+## Personal Tool Management Changes
+- Moved away from Dorothy's interactive login form and most of its setup/installer scripts
+- Now using:
+  * mise with configuration at `@dot_config/mise/config.toml.tmpl`
+  * webi
+  * apt
+  * winget
+  * homebrew
+- Simplified tool and environment management approach
+
+## Guidelines
+- Prefer `$HOME` over hardcoded paths (e.g. `/home/ben`)

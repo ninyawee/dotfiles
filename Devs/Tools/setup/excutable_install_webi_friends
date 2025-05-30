@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Source the setup configuration
+source "$HOME/Devs/Tools/my_dorothy/config/setup.bash"
+
+# Install each webi tool from the configuration
+for tool in "${webi[@]}"; do
+    echo "Installing $tool via webi..."
+    webi "$tool"
+done

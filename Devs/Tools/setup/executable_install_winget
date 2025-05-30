@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Install WinGet packages from setup.bash configuration
+
+set -euo pipefail
+
+# Source the setup configuration
+source "$HOME/.local/share/chezmoi/Devs/Tools/my_dorothy/config/setup.bash"
+
+# Check if winget is available
+if ! command -v winget.exe &> /dev/null && ! command -v winget &> /dev/null; then
+    echo "WinGet not found. This script is for Windows systems."
+    exit 1
+fi
+
+# Determine winget command
+WINGET_CMD="winget"
+if command -v winget.exe &> /dev/null; then
+    WINGET_CMD="winget.exe"
+fi
+
+# Install WinGet packages
+if [[ ${#WINGET[@]} -gt 0 ]]; then
+    echo "Installing WinGet packages..."
+    for package in "${WINGET[@]}"; do
+        echo "Installing $package..."
+        $WINGET_CMD install --id "$package" --accept-package-agreements --accept-source-agreements || echo "Warning: Failed to install $package"
+    done
+    echo "WinGet packages installation complete!"
+else
+    echo "No WinGet packages configured in setup.bash"
+fi

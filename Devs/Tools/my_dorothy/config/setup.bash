@@ -10,6 +10,7 @@
 # Used by `setup-linux`
 # APT_UNINSTALL=()
 APT_INSTALL=(
+	build-essential
 	gdb
 	lcov
 	libbz2-dev
@@ -62,34 +63,13 @@ APT_INSTALL=(
 # HOMEBREW_UNTAPS=()
 # HOMEBREW_TAPS=()
 HOMEBREW_FORMULAS=(
-	'jandedobbeleer/oh-my-posh/oh-my-posh'
+	shellcheck
 )
 # HOMEBREW_SLOW_FORMULAS=()
 # HOMEBREW_CASKS=()
 HOMEBREW_FONTS=(
-	'font-cantarell'
-	'font-cascadia-code'
-	'font-fira-code'
-	'font-fira-code-nerd-font'
-	'font-fira-mono'
-	'font-fira-mono-nerd-font'
-	'font-hack' # many editors require this
-	'font-hasklig'
-	'font-ibm-plex' # many editors require this
-	'font-inconsolata-go-nerd-font'
-	'font-inter' # many apps require this
 	'font-jetbrains-mono'
 	'font-jetbrains-mono-nerd-font'
-	'font-lato'
-	'font-maven-pro'
-	'font-monoid'
-	'font-montserrat'
-	'font-open-sans'
-	'font-oxygen'
-	'font-oxygen-mono'
-	'font-roboto'
-	'font-roboto-mono'
-	'font-source-code-pro' # many editors require this
 	'font-ubuntu'
 )
 # HOMEBREW_UNINSTALL=()        # for casks and formulas
@@ -199,4 +179,14 @@ WINGET=(
 	'Anaconda.Miniconda3'
 	'Levitsky.FontBase'
 	'DEVCOM.JetBrainsMonoNerdFont'
+)
+
+webi=(
+	psql
+	# myip
+	brew
+	nerdfont
+	# aliasman
+	# pathman
+	# serviceman
 )

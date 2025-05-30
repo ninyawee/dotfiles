@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Install Homebrew fonts from setup.bash configuration
+
+set -euo pipefail
+
+# Source the setup configuration
+source "$HOME/.local/share/chezmoi/Devs/Tools/my_dorothy/config/setup.bash"
+
+# Check if brew is available
+if ! command -v brew &> /dev/null; then
+    echo "Homebrew not found. Please install Homebrew first."
+    exit 1
+fi
+
+# Install fonts
+if [[ ${#HOMEBREW_FONTS[@]} -gt 0 ]]; then
+    echo "Installing Homebrew fonts..."
+    
+    # Ensure font cask is tapped
+    echo "Ensuring homebrew/cask-fonts is tapped..."
+    brew tap homebrew/cask-fonts 2>/dev/null || true
+    
+    for font in "${HOMEBREW_FONTS[@]}"; do
+        echo "Installing $font..."
+        brew install --cask "$font" || echo "Warning: Failed to install $font"
+    done
+    echo "Homebrew fonts installation complete!"
+else
+    echo "No Homebrew fonts configured in setup.bash"
+fi

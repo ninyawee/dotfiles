@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Install APT packages from setup.bash configuration
+
+set -euo pipefail
+
+# Source the setup configuration
+source "$HOME/.local/share/chezmoi/Devs/Tools/my_dorothy/config/setup.bash"
+
+# Check if apt-get is available
+if ! command -v apt-get &> /dev/null; then
+    echo "apt-get not found. This script is for Debian/Ubuntu systems."
+    exit 1
+fi
+
+# Install APT packages
+if [[ ${#APT_INSTALL[@]} -gt 0 ]]; then
+    echo "Installing APT packages..."
+    sudo apt-get update
+    sudo apt-get install -y "${APT_INSTALL[@]}"
+    echo "APT packages installation complete!"
+else
+    echo "No APT packages configured in setup.bash"
+fi

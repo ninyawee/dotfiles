@@ -8,6 +8,7 @@ alias fpp='fzf -m --preview "bat --color=always --style=header,grid --line-range
 alias g='git'
 alias gs='git status'
 
+[ -f "/home/ben/.claude/local/claude" ] && alias claude="/home/ben/.claude/local/claude"
 alias c='claude'
 
 alias ls='eza'
