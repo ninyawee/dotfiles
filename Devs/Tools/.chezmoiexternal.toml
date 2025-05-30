@@ -1,0 +1,4 @@
+["./dorothy"]
+type = "git-repo"
+url = "https://github.com/bevry/dorothy.git"
+refreshPeriod = "168h"
