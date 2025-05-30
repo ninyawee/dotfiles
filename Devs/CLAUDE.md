@@ -1,0 +1,1 @@
+- `ruff` could be run directly e.g. `ruff check . --fix`
