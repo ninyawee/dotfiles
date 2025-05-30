@@ -8,11 +8,17 @@ alias fpp='fzf -m --preview "bat --color=always --style=header,grid --line-range
 alias g='git'
 alias gs='git status'
 
+# cd to git repository root
+alias cdr='cd $(git rev-parse --show-toplevel 2>/dev/null || echo ".")'
+
 [ -f "/home/ben/.claude/local/claude" ] && alias claude="/home/ben/.claude/local/claude"
 alias c='claude'
 
 # Function to use claude with prompt
 @claude() {
+    claude -p "$*"
+}
+@c() {
     claude -p "$*"
 }
 
