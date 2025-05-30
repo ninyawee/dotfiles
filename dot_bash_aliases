@@ -11,6 +11,11 @@ alias gs='git status'
 [ -f "/home/ben/.claude/local/claude" ] && alias claude="/home/ben/.claude/local/claude"
 alias c='claude'
 
+# Function to use claude with prompt
+@claude() {
+    claude -p "$*"
+}
+
 alias ls='eza'
 alias ll='eza -l'
 alias la='eza -la'
