@@ -13,16 +13,16 @@ source <(fzf --zsh)
 export PATH="/snap/bin:$PATH"
 export PATH="/home/ben/.bun/bin:$PATH"
 
-# source '/home/ben/.local/share/dorothy/init.sh' # Dorothy
-# export DOROTHY="/home/ben/.local/share/dorothy"
-# export PATH="/home/ben/.local/share/dorothy/commands:/home/ben/.config/dorothy/commands:/home/ben/.local/share/dorothy/commands.beta:$PATH"
+export DOROTHY="/home/ben/.local/share/dorothy"
+export PATH="/home/ben/Devs/Tools/dorothy/commands:/home/ben/.config/dorothy/commands:/home/ben/Devs/Tools/dorothy/commands.beta:$PATH"
 
 
 export EDITOR="micro"
 
- if [[ -n "$VSCODE_INJECTION" ]] && command -v code >/dev/null; then
-      export VISUAL="code --wait"
-  fi
+if [[ -n "$VSCODE_INJECTION" ]] && command -v code >/dev/null; then
+    export VISUAL="code --wait"
+fi
+
 
 
 # Generated for envman. Do not edit.
@@ -86,3 +86,7 @@ zstyle :compinstall filename '/home/ben/.config/zsh/.zshrc'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
+
+[ -f /run/docker.sock ] && export DOCKER_HOST="unix:///run/docker.sock"
+[ -f /var/run/docker.sock ] && export DOCKER_HOST="unix:///var/run/docker.sock"
+user_id=$(id -u)
