@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+mkdir -p ~/.config/sops/age
+op read "op://Private/age for sops/age.txt" > ~/.config/sops/age/keys.txt
