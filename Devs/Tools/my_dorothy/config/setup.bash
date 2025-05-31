@@ -71,6 +71,8 @@ HOMEBREW_FONTS=(
 	'font-jetbrains-mono'
 	'font-jetbrains-mono-nerd-font'
 	'font-ubuntu'
+	'font-monaspace'
+	'font-monospace-nerd-font'
 )
 # HOMEBREW_UNINSTALL=()        # for casks and formulas
 # HOMEBREW_ENCODING_INSTALL='' # '', 'yes', 'no'
