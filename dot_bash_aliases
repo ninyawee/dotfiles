@@ -35,5 +35,7 @@ alias cme='chezmoi edit'
 alias z='zellij'
 alias za='zellij attach'
 
+alias lg='lazygit'
+
 # try until last command succeeds
 alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
