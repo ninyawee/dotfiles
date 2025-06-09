@@ -22,6 +22,14 @@ alias c='claude'
     claude -p "$*"
 }
 
+alias m="mise"
+alias me="mise run encrypt"
+
+alias u="uv"
+alias ur="uv run"
+
+alias tf="terraform"
+
 alias ls='eza'
 alias ll='eza -l'
 alias la='eza -la'
@@ -36,6 +44,8 @@ alias z='zellij'
 alias za='zellij attach'
 
 alias lg='lazygit'
+
+alias ts='tailscale'
 
 # try until last command succeeds
 alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
