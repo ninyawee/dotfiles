@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+TRACKING_FILE="$HOME/.config/sops/sent_hosts.log"
+
+# Check if tracking file exists
+if [ ! -f "$TRACKING_FILE" ]; then
+    echo "No hosts tracked. File not found: $TRACKING_FILE"
+    exit 0
+fi
+
+# Get unique hosts from tracking file
+HOSTS=$(cut -d' ' -f2- "$TRACKING_FILE" | sort -u)
+
+if [ -z "$HOSTS" ]; then
+    echo "No hosts found in tracking file"
+    exit 0
+fi
+
+echo "Found hosts:"
+echo "$HOSTS"
+echo
+
+read -p "Are you sure you want to destroy SOPS keys on all these hosts? (yes/no): " confirm
+
+if [ "$confirm" != "yes" ]; then
+    echo "Aborted"
+    exit 0
+fi
+
+# Destroy keys on each host
+while IFS= read -r host; do
+    echo "Destroying SOPS keys on $host..."
+    ssh "$host" "rm -f ~/.config/sops/age/keys.txt && rmdir ~/.config/sops/age 2>/dev/null && rmdir ~/.config/sops 2>/dev/null || true" && {
+        echo "✓ Destroyed keys on $host"
+    } || {
+        echo "✗ Failed to destroy keys on $host"
+    }
+done <<< "$HOSTS"
+
+# Clear the tracking file
+> "$TRACKING_FILE"
+echo
+echo "Tracking file cleared"
