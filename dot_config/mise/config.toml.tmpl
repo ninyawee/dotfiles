@@ -152,6 +152,7 @@ gcloud = "latest"
 hk = "latest"
 "pipx:juv" = "latest"
 pkl = "latest"
+terraform = "latest"
 
 # ============================================================================
 # Settings
@@ -169,3 +170,7 @@ uvx = true
 
 [settings.npm]
 bun = true
+
+[tasks."mise:install"]
+run = "mise install"
+env = { GITHUB_TOKEN = "{{`{{ env.GITHUB_BINARY_DL_TOKEN }}`}}"}
