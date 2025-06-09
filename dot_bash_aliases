@@ -48,5 +48,8 @@ alias lg='lazygit'
 
 alias ts='tailscale'
 
+alias ai='sudo apt update && sudo apt install'
+alias au='sudo apt update && sudo apt upgrade'
+
 # try until last command succeeds
 alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
