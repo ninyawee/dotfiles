@@ -36,9 +36,10 @@ alias la='eza -la'
 alias l='eza -l'
 
 alias cm="chezmoi"
-alias cea='chezmoi edit --apply'
-alias cma='chezmoi apply'
-alias cme='chezmoi edit'
+alias cme='chezmoi edit --apply'
+alias cma='chezmoi add'
+alias cmae='chezmoi add --encrypt'
+alias cmm='chezmoi merge'
 
 alias z='zellij'
 alias za='zellij attach'
