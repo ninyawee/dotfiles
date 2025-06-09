@@ -14,10 +14,15 @@ export PATH="/snap/bin:$PATH"
 export PATH="$HOME/.bun/bin:$PATH"
 
 export TOOLDIR="$HOME/Devs/Tools"
+
+export DOROTHY="$HOME/Devs/Tools/dorothy"
 export PATH="$PATH:$TOOLDIR/dorothy/commands:$TOOLDIR/my_dorothy/commands:$TOOLDIR/dorothy/commands.beta"
 export PATH="$PATH:$TOOLDIR/pg-essentials"
 
 export EDITOR="micro"
+[ -x "$(command -v code)" ] && export EDITOR="code"
+
+
 
 if [[ -n "$VSCODE_INJECTION" ]] && command -v code >/dev/null; then
     export VISUAL="code --wait"
@@ -77,3 +82,8 @@ compinit
 
 [ -f /run/docker.sock ] && export DOCKER_HOST="unix:///run/docker.sock"
 [ -f /var/run/docker.sock ] && export DOCKER_HOST="unix:///var/run/docker.sock"
+
+# Set up tailscale completion
+if [ -x "$(command -v tailscale)" ]; then
+    source <(tailscale completion zsh)
+fi
