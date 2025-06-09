@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Check if host argument is provided
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <hostname>"
+    echo "Example: $0 user@remote-host"
+    exit 1
+fi
+
+HOST="$1"
+
+# Check if SOPS keys exist locally
+if [ ! -f ~/.config/sops/age/keys.txt ]; then
+    echo "SOPS keys not found locally. Run pull_sops_from_1pass first."
+    exit 1
+fi
+
+# Create remote directory and copy keys
+echo "Creating remote directory..."
+ssh "$HOST" "mkdir -p ~/.config/sops/age" || {
+    echo "Failed to create remote directory"
+    exit 1
+}
+
+echo "Copying SOPS keys to $HOST..."
+scp ~/.config/sops/age/keys.txt "$HOST:~/.config/sops/age/" || {
+    echo "Failed to copy SOPS keys"
+    exit 1
+}
+
+echo "SOPS keys successfully sent to $HOST"
+
+# Log the host to tracking file
+TRACKING_FILE="$HOME/.config/sops/sent_hosts.log"
+mkdir -p "$(dirname "$TRACKING_FILE")"
+echo "$(date -Iseconds) $HOST" >> "$TRACKING_FILE"
+echo "Host added to tracking file: $TRACKING_FILE"
