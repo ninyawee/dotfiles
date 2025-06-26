@@ -13,6 +13,8 @@ alias cdr='cd $(git rev-parse --show-toplevel 2>/dev/null || echo ".")'
 
 [ -f "/home/ben/.claude/local/claude" ] && alias claude="/home/ben/.claude/local/claude"
 alias c='claude'
+alias cc='claude --continue'
+alias cr='claude --resume'
 
 # Function to use claude with prompt
 @claude() {
@@ -21,6 +23,8 @@ alias c='claude'
 @c() {
     claude -p "$*"
 }
+
+alias co="code"
 
 alias m="mise"
 alias me="mise run encrypt"
@@ -45,6 +49,7 @@ alias z='zellij'
 alias za='zellij attach'
 
 alias lg='lazygit'
+alias gg='git-graph'
 
 alias ts='tailscale'
 
