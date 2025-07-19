@@ -87,3 +87,7 @@ compinit
 if [ -x "$(command -v tailscale)" ]; then
     source <(tailscale completion zsh)
 fi
+
+if [ -d "$HOME/Devs/Tools/android-studio/bin" ]; then
+    export PATH="$HOME/Devs/Tools/android-studio/bin:$PATH"
+fi

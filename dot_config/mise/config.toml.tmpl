@@ -2,7 +2,8 @@
 # Environment Variables
 # ============================================================================
 [env]
-sops_recipients = "age1g5k44garh308gqddyy0upn7dmnxcv5s9yhtf2n47axhmlm58m4lqq7hpd6"
+CDT_SOPS_RECIPIENTS = "age1g5k44garh308gqddyy0upn7dmnxcv5s9yhtf2n47axhmlm58m4lqq7hpd6,age1zqlegn8rn9xmsvfxughl3tm7ll7q8r9l58g2ze485fke785a9utqq95pv6"
+MY_SOPS_RECIPIENTS = "age1g5k44garh308gqddyy0upn7dmnxcv5s9yhtf2n47axhmlm58m4lqq7hpd6"
 
 AIDER_DARK_MODE = "true"
 AIDER_EDITOR = "code --wait"
@@ -170,6 +171,9 @@ uvx = true
 
 [settings.npm]
 bun = true
+
+[settings.sops]
+age_key_file = "~/.config/sops/age/keys.txt"
 
 [tasks."mise:install"]
 run = "mise install"
