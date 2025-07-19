@@ -2,4 +2,4 @@
 #MISE description="Encrypt a file using sops with the configured age recipient"
 #MISE dir="{{cwd}}"
 
-sops encrypt --age "$sops_recipients" "${1:-.env}" --output "${1:-.env}.encrypted"
+sops encrypt --age "$CDT_SOPS_RECIPIENTS" "${1:-.env}" --output "${1:-.env}.encrypted"
