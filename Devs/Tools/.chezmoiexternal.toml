@@ -7,3 +7,8 @@ refreshPeriod = "168h"
 type = "git-repo"
 url = "https://github.com/bnnanet/pg-essentials.git"
 refreshPeriod = "168h"
+
+["./plover-5.0.0rc1-x86_64.AppImage"]
+type = "file"
+url = "https://github.com/openstenoproject/plover/releases/download/v5.0.0rc1/plover-5.0.0rc1-x86_64.AppImage"
+executable = true
