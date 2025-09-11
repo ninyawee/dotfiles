@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# Install DevToys
+# https://devtoys.app/
+
+set -euo pipefail
+
+# Determine OS
+OS="$(uname -s)"
+ARCH="$(uname -m)"
+
+case "$OS" in
+    Darwin)
+        # macOS
+        if command -v brew &> /dev/null; then
+            echo "Installing DevToys via Homebrew..."
+            brew install --cask devtoys
+        else
+            echo "Homebrew not found. Please install Homebrew first or download DevToys manually from:"
+            echo "https://devtoys.app/download"
+            exit 1
+        fi
+        ;;
+    
+    Linux)
+        # Linux
+        if [[ "$ARCH" == "x86_64" ]]; then
+            DEB_ARCH="amd64"
+        elif [[ "$ARCH" == "aarch64" ]]; then
+            DEB_ARCH="arm64"
+        else
+            echo "Unsupported architecture: $ARCH"
+            exit 1
+        fi
+        
+        # Get latest release URL from GitHub
+        echo "Fetching latest DevToys release..."
+        LATEST_RELEASE=$(curl -s https://api.github.com/repos/DevToys-app/DevToys/releases/latest)
+        DEB_URL=$(echo "$LATEST_RELEASE" | grep -o "https://.*devtoys_linux_${DEB_ARCH}\.deb" | head -1)
+        
+        if [[ -z "$DEB_URL" ]]; then
+            echo "Could not find .deb package for architecture: $DEB_ARCH"
+            echo "Please download manually from: https://devtoys.app/download"
+            exit 1
+        fi
+        
+        # Download and install
+        echo "Downloading DevToys..."
+        TEMP_DEB="$(mktemp -t devtoys.XXXXXX.deb)"
+        curl -L -o "$TEMP_DEB" "$DEB_URL"
+        
+        echo "Installing DevToys..."
+        sudo dpkg -i "$TEMP_DEB" || sudo apt-get install -f -y
+        rm -f "$TEMP_DEB"
+        ;;
+    
+    MINGW*|CYGWIN*|MSYS*)
+        # Windows (Git Bash, WSL)
+        if command -v winget &> /dev/null; then
+            echo "Installing DevToys via WinGet..."
+            winget install DevToys-app.DevToys
+        else
+            echo "WinGet not found. Please install DevToys from Microsoft Store or download from:"
+            echo "https://devtoys.app/download"
+            exit 1
+        fi
+        ;;
+    
+    *)
+        echo "Unsupported operating system: $OS"
+        echo "Please download DevToys manually from: https://devtoys.app/download"
+        exit 1
+        ;;
+esac
+
+echo "DevToys installation completed!"
