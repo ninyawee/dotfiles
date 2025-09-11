@@ -8,16 +8,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build/Lint/Test Commands
 - Apply dotfile changes: `chezmoi apply`
 - Preview changes: `chezmoi diff`
+- Check chezmoi status: `chezmoi status`
+- Verify template syntax: `chezmoi data`
+- Force refresh external files: `chezmoi apply --refresh-externals`
+- Install mise tools: `mise install`
+- Update mise tools: `mise up`
+- Lint shell scripts: `shfmt -d .` or `shfmt -w .`
+- Check Python code: `ruff check . --fix`
 
 ## Architecture & Structure
-- **commands/**: Custom Dorothy commands (executable scripts)
-- **commands.local/**: User-specific commands (gitignored)
-- **config/**: Shell and tool configurations loaded by Dorothy
-- **config.local/**: User-specific configurations (gitignored)
+- **dot_config/**: Chezmoi-managed configuration files for various tools
+  - **mise/**: Tool version management and environment configuration
+  - **gh/**, **rclone/**, **espanso/**: Individual tool configurations
 - **setup/**: Installation and setup scripts for various tools
-- **chezmoi_files/**: Chezmoi-managed dotfile templates
+- **Devs/**: Legacy Dorothy setup files and configurations
 - **.tmpl files**: Chezmoi templates that get processed during `chezmoi apply`
 - **.age files**: Age-encrypted sensitive data (1Password integration)
+- **dot_bash_***: Shell configuration files (bashrc, bash_aliases, bash_profile)
+- **dot_gitconfig.tmpl**: Git configuration template
 
 ## Code Style Guidelines
 - Shell scripts should use shebang `#!/usr/bin/env bash`
@@ -33,9 +41,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 
 ## Chezmoi Template Variables
-- Templates can access chezmoi variables (e.g., `{{ .chezmoi.os }}`)
+- Templates can access chezmoi variables (e.g., `{{ .chezmoi.os }}`, `{{ .chezmoi.homeDir }}`)
 - Use `run_onchange_*.sh.tmpl` for scripts that run when their content changes
 - Encrypted files use `.age` extension with 1Password as the encryption backend
+- Environment variables can be accessed in templates with `{{ env "VAR_NAME" }}`
 
 ## Environment
 - Repository is managed with chezmoi dotfile manager
@@ -44,17 +53,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 1Password CLI (`op`) integration for secrets management
 - Atuin for shell history management
 
-## Repository Paths
+## Tool Management Strategy
+- **mise**: Primary tool version manager configured in `dot_config/mise/config.toml.tmpl`
+  - Manages programming languages, runtimes, and development tools
+  - Automatic environment loading via `mise.toml` files
+  - Uses various backends: cargo, pipx, ubi, go install
+- **Package managers**: Secondary tool installation via webi, apt, winget, homebrew
+- **Encryption**: Age encryption with 1Password integration for sensitive configurations
 
-## Personal Tool Management Changes
-- Moved away from Dorothy's interactive login form and most of its setup/installer scripts
-- Now using:
-  * mise with configuration at `@dot_config/mise/config.toml.tmpl`
-  * webi
-  * apt
-  * winget
-  * homebrew
-- Simplified tool and environment management approach
+## Key Configuration Files
+- `dot_config/mise/config.toml.tmpl`: Central tool and environment management
+- `.chezmoi.toml.tmpl`: Chezmoi configuration with age encryption and VS Code merge/diff
+- `dot_bashrc`: Shell initialization and configuration
+- `dot_bash_aliases`: Custom shell aliases and functions
+- `Devs/Tools/.chezmoiexternal.toml`: External file downloads and archive extractions
 
 ## Guidelines
 - Prefer `$HOME` over hardcoded paths (e.g. `/home/ben`)
+- When modifying encrypted `.age` files, decrypt first, edit, then re-encrypt
+- Test template changes with `chezmoi data` before applying
+- Use mise for tool management instead of manual installation
+- Follow existing naming patterns for new dotfiles (dot_ prefix for chezmoi)
