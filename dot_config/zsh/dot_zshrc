@@ -1,7 +1,14 @@
 eval "$("$HOME/.local/bin/mise" activate zsh)"
 eval "$(mise completion zsh)"
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+if [ -f "~/.config/envman/PATH.env" ]; then
+    source ~/.config/envman/PATH.env
+fi
+
 eval "$(starship init zsh)"
 
 if [ -f ~/.bash_aliases ]; then
