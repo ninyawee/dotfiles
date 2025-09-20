@@ -5,7 +5,7 @@ set -euo pipefail
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-APPIMAGE_PATH="$SCRIPT_DIR/plover-5.0.0rc1-x86_64.AppImage"
+APPIMAGE_PATH="$SCRIPT_DIR/../../plover-5.0.0rc1-x86_64.AppImage"
 
 # Check if AppImage exists
 if [[ ! -f "$APPIMAGE_PATH" ]]; then

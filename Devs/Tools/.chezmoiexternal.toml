@@ -8,7 +8,7 @@ type = "git-repo"
 url = "https://github.com/bnnanet/pg-essentials.git"
 refreshPeriod = "168h"
 
-["./graphite-layout"]
+["./keyboards/layouts/graphite/graphite-layout"]
 type = "git-repo"
 url = "https://github.com/ninyawee/graphite-layout.git"
 refreshPeriod = "168h"
@@ -22,3 +22,7 @@ executable = true
 type = "archive"
 url = "https://github.com/ventoy/Ventoy/releases/download/v1.1.07/ventoy-1.1.07-linux.tar.gz"
 stripComponents = 2
+
+["./keymapp"]
+type = "archive"
+url = "https://oryx.nyc3.cdn.digitaloceanspaces.com/keymapp/keymapp-latest.tar.gz"

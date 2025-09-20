@@ -1,0 +1,9 @@
+--- Manoonchai_xkb.orig	2025-09-20 20:30:00.000000000 +0700
++++ Manoonchai_xkb	2025-09-20 20:31:00.000000000 +0700
+@@ -1,5 +1,5 @@
+ partial alphanumeric_keys
+-xkb_symbols "ThaiMnc" {
++xkb_symbols "manoonchai" {
+ 
+     // COPYRIGHT    "MIT"
+ 
