@@ -1,6 +1,6 @@
 GITLAB_USERNAME='CircleOnCircles'
 GIT_DEFAULT_BRANCH='main'
-GIT_EMAIL='nutchanon@codustry.com'
+GIT_EMAIL='me@nutchanon.org'
 GIT_NAME='Nutchanon Ninyawee'
 GIT_PROTOCOL='https'
 GITHUB_USERNAME='wasdee'
