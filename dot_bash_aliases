@@ -1,29 +1,15 @@
+#!/usr/bin/env bash
+
 export APPLIED_BASHALIAS=1
 
-alias f='fzf'
-alias fm='fzf -m'
-alias fp='fzf -m --preview "bat --color=always --style=header,grid --line-range :500 {}"'
-alias fpp='fzf -m --preview "bat --color=always --style=header,grid --line-range :500 {}" --preview-window=right:70%'
-
-alias g='git'
-alias gs='git status'
-
 # cd to git repository root
-alias cdr='cd $(git rev-parse --show-toplevel 2>/dev/null || echo ".")'
+alias cdd='cd $(git rev-parse --show-toplevel 2>/dev/null || echo ".")'
 
-[ -f "/home/ben/.claude/local/claude" ] && alias claude="/home/ben/.claude/local/claude"
 alias c='claude'
 alias cc='claude --continue'
 alias cr='claude --resume'
 
-# Function to use claude with prompt
-@claude() {
-    claude -p "$*"
-}
-@c() {
-    claude -p "$*"
-}
-
+alias zz='zed'
 alias co="code"
 
 alias m="mise"
@@ -34,10 +20,9 @@ alias ur="uv run"
 
 alias tf="terraform"
 
-alias ls='eza'
-alias ll='eza -l'
-alias la='eza -la'
-alias l='eza -l'
+alias ll='lt'
+alias lll='lt --level=3'
+alias la='ls -a'
 
 alias cm="chezmoi"
 alias cme='chezmoi edit --apply'
