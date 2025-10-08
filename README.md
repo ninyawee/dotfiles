@@ -1,6 +1,8 @@
-# Dorothy User Configuration
+# Ninyawee dotfile
 
-This is ben-pc's user configuration for the [Dorothy](https://github.com/bevry/dorothy) dotfile ecosystem.
+This will help is boostrapping the ubuntu. it is required Omakube to be install first. It works well with Omakube hand in hand.
 
-## TODO
-add Monaspace Neon Frozen font set installation https://github.com/githubnext/monaspace/releases/tag/v1.200
+This features - optimizes towards
+- keymapping for graphite keyboard layout
+
+some keys will
