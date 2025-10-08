@@ -1,35 +1,8 @@
-[user]
-	name = Nutchanon Ninyawee
-	email = me@nutchanon.com
-
-[pull]
-	rebase = true
-
-{{ if eq .chezmoi.os "linux" }}
-{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
-[credential "https://github.com"]
-	helper = 
-	helper = !{{ lookPath "gh" }} auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !{{ lookPath "gh" }} auth git-credential
-[core]
-	sshCommand = ssh.exe
-[credential "https://dev.azure.com/"]
-	helper = /mnt/c/Program\\ Files/Git/mingw64/bin/git-credential-manager.exe
-	useHttpPath = true
-{{   else }}
-[credential]
-	helper = 
-	helper = /usr/local/bin/git-credential-manager
-	credentialStore = cache
-	cacheOptions = --timeout 604800
-[credential "https://dev.azure.com"]
-	useHttpPath = true
-{{   end }}
-{{ end }}
-
 [alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
 	append = town append
 	compress = town compress
 	contribute = town contribute
@@ -46,8 +19,16 @@
 	ship = town ship
 	sync = town sync
 
+[pull]
+	rebase = true
+
+[user]
+	name = Nutchanon Ninyawee
+	email = me@nutchanon.com
+
 [core]
 	pager = delta
+
 [interactive]
 	diffFilter = delta --color-only
 [delta]
@@ -55,3 +36,9 @@
 	dark = true
 [merge]
 	conflictStyle = zdiff3
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
