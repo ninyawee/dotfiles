@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Configure keyboard layout switching
+# Sets Caps Lock as the toggle key for switching between keyboard layouts
+
+set -euo pipefail
+
+# Check if we're on a system with gsettings (GNOME/Ubuntu desktop)
+if ! command -v gsettings &> /dev/null; then
+    echo "gsettings not found. Skipping keyboard layout configuration."
+    exit 0
+fi
+
+echo "Configuring keyboard layout toggle (Caps Lock)..."
+gsettings set org.gnome.desktop.input-sources xkb-options "['grp:caps_toggle']"
+
+echo "Keyboard layout toggle configured successfully!"
+echo "You can now use Caps Lock to switch between keyboard layouts."
