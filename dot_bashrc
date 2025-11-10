@@ -4,3 +4,9 @@ source ~/.local/share/omakub/defaults/bash/rc
 export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 . "$HOME/.cargo/env"
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+if [ -f ~/.bash_aliases ]; then
+. ~/.bash_aliases
+fi
