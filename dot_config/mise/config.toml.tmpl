@@ -106,10 +106,6 @@ chezmoi = "latest"
 # ----------------------------------------------------------------------------
 "cargo:ouch" = "latest"
 
-# ----------------------------------------------------------------------------
-# Shell & Prompts
-# ----------------------------------------------------------------------------
-starship = "latest"
 
 # ----------------------------------------------------------------------------
 # AI & Language Tools
@@ -168,9 +164,4 @@ uvx = true
 [settings.npm]
 bun = true
 
-[settings.sops]
-age_key_file = "~/.config/sops/age/keys.txt"
 
-[tasks."mise:install"]
-run = "mise install"
-env = { GITHUB_TOKEN = "{{`{{ env.GITHUB_BINARY_DL_TOKEN }}`}}"}
