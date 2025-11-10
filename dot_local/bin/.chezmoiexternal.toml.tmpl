@@ -1,0 +1,7 @@
+{{- if (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) }}
+["wsl-open"]
+type = "file"
+url = "https://gitlab.com/4U6U57/wsl-open/-/raw/master/wsl-open.sh"
+refreshPeriod = "168h"
+executable = true
+{{- end }}
