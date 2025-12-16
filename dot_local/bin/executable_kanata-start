@@ -1,0 +1,94 @@
+#!/bin/bash
+# Start kanata keyboard remapper
+# Usage: kanata-start [--check|--stop|--restart|--status]
+
+set -e
+
+CONFIG="$HOME/.config/kanata/kanata.kbd"
+
+check_prerequisites() {
+    local errors=0
+
+    # Check if kanata is installed
+    if ! command -v kanata &> /dev/null; then
+        echo "ERROR: kanata not installed. Run: cargo install kanata"
+        errors=$((errors + 1))
+    fi
+
+    # Check if user is in uinput group
+    if ! groups "$USER" | grep -q '\buinput\b'; then
+        echo "ERROR: $USER not in uinput group. Run: sudo usermod -aG uinput $USER"
+        errors=$((errors + 1))
+    fi
+
+    # Check if user is in input group
+    if ! groups "$USER" | grep -q '\binput\b'; then
+        echo "ERROR: $USER not in input group. Run: sudo usermod -aG input $USER"
+        errors=$((errors + 1))
+    fi
+
+    # Check if uinput module is loaded
+    if ! lsmod | grep -q '^uinput'; then
+        echo "WARNING: uinput module not loaded. Run: sudo modprobe uinput"
+    fi
+
+    # Check if config exists
+    if [ ! -f "$CONFIG" ]; then
+        echo "ERROR: Config not found at $CONFIG"
+        errors=$((errors + 1))
+    fi
+
+    # Check /dev/uinput permissions
+    if [ ! -w /dev/uinput ] 2>/dev/null; then
+        echo "WARNING: /dev/uinput not writable. Check udev rules."
+    fi
+
+    return $errors
+}
+
+case "${1:-start}" in
+    --check|-c)
+        echo "Checking kanata prerequisites..."
+        if check_prerequisites; then
+            echo "All prerequisites met!"
+            kanata --cfg "$CONFIG" --check
+        else
+            exit 1
+        fi
+        ;;
+    --stop|-k)
+        echo "Stopping kanata..."
+        systemctl --user stop kanata.service 2>/dev/null || pkill -x kanata || echo "kanata not running"
+        ;;
+    --restart|-r)
+        echo "Restarting kanata..."
+        systemctl --user restart kanata.service
+        systemctl --user status kanata.service --no-pager
+        ;;
+    --status|-s)
+        systemctl --user status kanata.service --no-pager || true
+        ;;
+    --help|-h)
+        echo "Usage: kanata-start [OPTION]"
+        echo ""
+        echo "Options:"
+        echo "  (none)      Start kanata service"
+        echo "  --check     Check prerequisites and validate config"
+        echo "  --stop      Stop kanata"
+        echo "  --restart   Restart kanata"
+        echo "  --status    Show kanata status"
+        echo "  --help      Show this help"
+        ;;
+    start|"")
+        if ! systemctl --user is-active kanata.service &>/dev/null; then
+            echo "Starting kanata..."
+            systemctl --user start kanata.service
+        fi
+        systemctl --user status kanata.service --no-pager
+        ;;
+    *)
+        echo "Unknown option: $1"
+        echo "Run 'kanata-start --help' for usage"
+        exit 1
+        ;;
+esac

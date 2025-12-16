@@ -1,10 +1,14 @@
-;; Kanata Graphite layout configuration
+;; Kanata Graphite layout with home row mods and layers
+;; Mirrors ZSA Voyager configuration
 ;; Documentation: https://github.com/jtroo/kanata/blob/main/docs/config.adoc
-;; Graphite layout: https://github.com/rdavison/graphite-layout
 ;;
-;; Toggle between Graphite/QWERTY: Press both Shift keys together
+;; Home Row Mods (tap/hold):
+;;   Left:  N(GUI) R(Alt) T(Ctrl) S(Shift)
+;;   Right: H(Shift) A(Ctrl) E(Alt) I(GUI)
+;;
+;; Layers: Hold L/D/W or F/O/U for layers
+;; Toggle QWERTY: Both Shift keys together
 
-;; Target only the NuPhy Air75 Bluetooth keyboard
 (defcfg
   linux-dev-names-include (
     "Air75 BT5.0 "
@@ -12,24 +16,77 @@
   process-unmapped-keys yes
 )
 
-;; Chord: both shifts together to toggle layout
-(defchords toggle 50
-  (lsft rsft) (layer-switch qwerty)
+;; ============================================================
+;; Variables for timing
+;; ============================================================
+(defvar
+  tap-time 200
+  hold-time 200
+  tt $tap-time      ;; tap timeout
+  ht $hold-time     ;; hold timeout
 )
 
-(defchords toggle-back 50
-  (lsft rsft) (layer-switch graphite)
-)
-
-;; Aliases for shift keys with chord capability
+;; ============================================================
+;; Aliases - Home Row Mods
+;; ============================================================
 (defalias
-  lsg (chord toggle lsft)
-  rsg (chord toggle rsft)
-  lsq (chord toggle-back lsft)
-  rsq (chord toggle-back rsft)
+  ;; Left home row: N R T S (tap=letter, hold=modifier)
+  hrn (tap-hold $tt $ht n lmet)    ;; N / GUI
+  hrr (tap-hold $tt $ht r lalt)    ;; R / Alt
+  hrt (tap-hold $tt $ht t lctl)    ;; T / Ctrl
+  hrs (tap-hold $tt $ht s lsft)    ;; S / Shift
+
+  ;; Right home row: H A E I (tap=letter, hold=modifier)
+  hrh (tap-hold $tt $ht h rsft)    ;; H / Shift
+  hra (tap-hold $tt $ht a rctl)    ;; A / Ctrl
+  hre (tap-hold $tt $ht e ralt)    ;; E / Alt
+  hri (tap-hold $tt $ht i rmet)    ;; I / GUI
 )
 
-;; Physical keyboard layout (QWERTY positions)
+;; ============================================================
+;; Aliases - Layer Access
+;; ============================================================
+(defalias
+  ;; Left hand layer access (on top row)
+  ll (tap-hold $tt $ht l (layer-while-held nav))       ;; L / Nav layer
+  ld (tap-hold $tt $ht d (layer-while-held sym))       ;; D / Symbols layer
+  lw (tap-hold $tt $ht w (layer-while-held edit))      ;; W / Edit/Numpad layer
+
+  ;; Right hand layer access
+  lf (tap-hold $tt $ht f (layer-while-held nav))       ;; F / Nav layer
+  lo (tap-hold $tt $ht o (layer-while-held sym))       ;; O / Symbols layer
+  lu (tap-hold $tt $ht u (layer-while-held numrow))    ;; U / NumRow layer
+)
+
+;; ============================================================
+;; Aliases - Special Keys and Macros
+;; ============================================================
+(defalias
+  ;; Paired brackets (outputs both and moves cursor back)
+  prn (macro S-9 S-0 left)         ;; ()
+  brc (macro [ ] left)             ;; []
+  crl (macro S-[ S-] left)         ;; {}
+  ang (macro S-, S-. left)         ;; <>
+
+  ;; Common shortcuts
+  cpy C-c
+  pst C-v
+  cut C-x
+  udo C-z
+  rdo C-y
+  sav C-s
+  sal C-a    ;; Select all
+
+  ;; QWERTY toggle via both shifts
+  lsg (tap-hold $tt $ht lsft (layer-switch qwerty))
+  rsg (tap-hold $tt $ht rsft (layer-switch qwerty))
+  lsq (tap-hold $tt $ht lsft (layer-switch graphite))
+  rsq (tap-hold $tt $ht rsft (layer-switch graphite))
+)
+
+;; ============================================================
+;; Physical Layout (QWERTY positions on 60% keyboard)
+;; ============================================================
 (defsrc
   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
@@ -38,19 +95,74 @@
   lctl lmet lalt           spc            ralt rmet rctl
 )
 
-;; Graphite layout (default)
+;; ============================================================
+;; Layer 0: Graphite Base with Home Row Mods
+;; ============================================================
 ;; b l d w z  ' f o u j ; = \
 ;; n r t s g  y h a e i ,
 ;; q x m c v  k p . - /
 (deflayer graphite
   grv  1    2    3    4    5    6    7    8    9    0    [    ]    bspc
-  tab  b    l    d    w    z    '    f    o    u    j    ;    =    \
-  caps n    r    t    s    g    y    h    a    e    i    ,    ret
+  tab  b    @ll  @ld  @lw  z    '    @lf  @lo  @lu  j    ;    =    \
+  esc  @hrn @hrr @hrt @hrs g    y    @hrh @hra @hre @hri ,    ret
   @lsg q    x    m    c    v    k    p    .    -    /    @rsg
   lctl lmet lalt           spc            ralt rmet rctl
 )
 
-;; QWERTY layout (for gaming, etc.)
+;; ============================================================
+;; Layer 1: Navigation (hold L or F)
+;; ============================================================
+;; Media: mute, vol-, play, vol+
+;; Left: Esc, Del, modifiers
+;; Right: Arrows, Home/End, Ctrl+A/C/V
+(deflayer nav
+  _    f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  _    mute vold pp   volu caps _    C-c  up   C-v  _    _    _    _
+  _    esc  del  lalt lctl _    _    left down rght rctl _    _
+  _    _    _    lsft _    _    home pgdn pgup end  _    _
+  _    _    _              _              _    _    _
+)
+
+;; ============================================================
+;; Layer 2: Symbols (hold D or O)
+;; ============================================================
+;; Left: ! | ^ * + $, = ~ @ / : #, & % \ -
+;; Right: {} ; <> |, [] " () ?, . - / ;
+(deflayer sym
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    S-1  S-\  S-6  S-8  S-=  S-4  @crl ;    @ang S-\  _    _    _
+  _    =    S-`  S-2  /    S-;  S-3  @brc '    @prn S-/  _    _
+  _    S-7  S-5  \    -    _    _    .    -    /    ;    _
+  _    _    _              _              _    _    _
+)
+
+;; ============================================================
+;; Layer 3: Edit + Numpad (hold W)
+;; ============================================================
+;; Left: Line select, cut/copy/paste, select all
+;; Right: Numpad layout
+(deflayer edit
+  _    _    _    _    _    _    nlk  kp/  kp*  kp-  _    _    _    _
+  _    _    C-a  @cut C-t  _    kp7  kp8  kp9  kp+  _    _    _    _
+  _    _    @sal C-S-l @cpy @pst _  kp4  kp5  kp6  bspc _    _
+  _    _    _    _    _    del  kp1  kp2  kp3  kprt _    _
+  _    _    _              kp0            _    _    _
+)
+
+;; ============================================================
+;; Layer 4: NumRow + F-keys (hold U)
+;; ============================================================
+(deflayer numrow
+  _    f21  f22  f23  f24  _    _    _    _    _    _    _    _    _
+  _    1    2    3    4    5    6    7    8    9    0    del  pause _
+  _    f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  pgup _
+  _    f11  f12  f13  f14  f15  f16  f17  f18  f19  f20  pgdn
+  _    _    _              _              _    _    _
+)
+
+;; ============================================================
+;; QWERTY (for gaming) - toggle via both shifts
+;; ============================================================
 (deflayer qwerty
   grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
   tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
