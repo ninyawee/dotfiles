@@ -1,0 +1,60 @@
+;; Kanata Graphite layout configuration
+;; Documentation: https://github.com/jtroo/kanata/blob/main/docs/config.adoc
+;; Graphite layout: https://github.com/rdavison/graphite-layout
+;;
+;; Toggle between Graphite/QWERTY: Press both Shift keys together
+
+;; Target only the NuPhy Air75 Bluetooth keyboard
+(defcfg
+  linux-dev-names-include (
+    "Air75 BT5.0 "
+  )
+  process-unmapped-keys yes
+)
+
+;; Chord: both shifts together to toggle layout
+(defchords toggle 50
+  (lsft rsft) (layer-switch qwerty)
+)
+
+(defchords toggle-back 50
+  (lsft rsft) (layer-switch graphite)
+)
+
+;; Aliases for shift keys with chord capability
+(defalias
+  lsg (chord toggle lsft)
+  rsg (chord toggle rsft)
+  lsq (chord toggle-back lsft)
+  rsq (chord toggle-back rsft)
+)
+
+;; Physical keyboard layout (QWERTY positions)
+(defsrc
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+;; Graphite layout (default)
+;; b l d w z  ' f o u j ; = \
+;; n r t s g  y h a e i ,
+;; q x m c v  k p . - /
+(deflayer graphite
+  grv  1    2    3    4    5    6    7    8    9    0    [    ]    bspc
+  tab  b    l    d    w    z    '    f    o    u    j    ;    =    \
+  caps n    r    t    s    g    y    h    a    e    i    ,    ret
+  @lsg q    x    m    c    v    k    p    .    -    /    @rsg
+  lctl lmet lalt           spc            ralt rmet rctl
+)
+
+;; QWERTY layout (for gaming, etc.)
+(deflayer qwerty
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  @lsq z    x    c    v    b    n    m    ,    .    /    @rsq
+  lctl lmet lalt           spc            ralt rmet rctl
+)
