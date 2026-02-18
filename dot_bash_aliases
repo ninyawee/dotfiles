@@ -30,8 +30,8 @@ alias cma='chezmoi add'
 alias cmae='chezmoi add --encrypt'
 alias cmm='chezmoi merge'
 
-alias z='zellij'
-alias za='zellij attach'
+alias zj='zellij'
+alias zja='zellij attach'
 
 alias lg='lazygit'
 alias gg='git-graph'
