@@ -1,8 +1,16 @@
 source ~/.local/share/omakub/defaults/bash/rc
 
 # Editor used by CLI
-export EDITOR="nvim"
+export EDITOR="micro"
+
+# Set use vscode as editor when running in vscode terminal
+# `fnox` needs execution without `args` to work properly, so we can't use `code --wait` as the default editor, but we can set `EDITOR` to `code-wait` when running in vscode terminal
+if [ "$TERM_PROGRAM" = "vscode" ]; then
+  export EDITOR="code-wait"
+fi
+
 export SUDO_EDITOR="$EDITOR"
+
 . "$HOME/.cargo/env"
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
