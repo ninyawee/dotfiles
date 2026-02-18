@@ -8,6 +8,7 @@ alias cdd='cd $(git rev-parse --show-toplevel 2>/dev/null || echo ".")'
 alias c='claude'
 alias cc='claude --continue'
 alias cr='claude --resume'
+alias cudo='sudo $(which claude)'
 
 alias zz='zed'
 alias co="code"
