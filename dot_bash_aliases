@@ -5,16 +5,17 @@ export APPLIED_BASHALIAS=1
 # cd to git repository root
 alias cdd='cd $(git rev-parse --show-toplevel 2>/dev/null || echo ".")'
 
-alias c='claude'
-alias cc='claude --continue'
-alias cr='claude --resume'
-alias cudo='sudo $(which claude)'
+alias c='claude --allow-dangerously-skip-permissions'
+alias cc='c --continue'
+alias ccf='c --continue --fork-session'
+alias cr='c --resume'
+alias crf='c --resume --fork-session'
+alias cdo='sudo $(which claude)'
 
 alias zz='zed'
 alias co="code"
 
 alias m="mise"
-alias me="mise run encrypt"
 
 alias u="uv"
 alias ur="uv run"
@@ -43,4 +44,4 @@ alias ai='sudo apt update && sudo apt install'
 alias au='sudo apt update && sudo apt upgrade'
 
 # try until last command succeeds
-alias trytilsucess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
+alias trytilsuccess='while [ $? -ne 0 ]; do eval $(history -p !!); done'
