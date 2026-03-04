@@ -1,0 +1,4 @@
+["./omakub"]
+type = "git-repo"
+url = "https://github.com/basecamp/omakub.git"
+refreshPeriod = "168h"

@@ -5,7 +5,6 @@
 MY_SOPS_RECIPIENTS = "age1jqy4r7lltng327m9wzwtrwcd9pkjpveafmv8cjhv2tymdmcg93vqrc3y4j"
 
 
-
 # ============================================================================
 # Tools Configuration
 # ============================================================================
@@ -28,31 +27,33 @@ rust = "latest"
 cargo-binstall = "latest"
 just = "latest"
 uv = "latest"
+"pipx:juv" = "latest"
 
 # ----------------------------------------------------------------------------
-# Version Control & Git Tools
+# Version Control & Git
 # ----------------------------------------------------------------------------
-"cargo:git-graph" = "latest"
 delta = "latest"
-gh = "latest"
-lazygit = "latest"
-"ubi:git-town/git-town" = "latest"
 fnox = "latest"
+gh = "latest"
+hk = "latest"
+lazygit = "latest"
+"cargo:git-graph" = "latest"
+"ubi:git-town/git-town" = "latest"
 
 # ----------------------------------------------------------------------------
-# Cloud & Infrastructure
+# Shell & Terminal
 # ----------------------------------------------------------------------------
-lazydocker = "latest"
-mc = "latest"
-rclone = "latest"
-"ubi:supabase-community/postgres-language-server" = "latest"
+television = "latest"
+zellij = "latest"
+"cargo:mprocs" = "latest"
+"cargo:zesh" = "latest"
 
 # ----------------------------------------------------------------------------
-# Security & Encryption
+# Editors & Text Processing
 # ----------------------------------------------------------------------------
-age = "latest"
-"cargo:rops-cli" = "latest"
-sops = "latest"
+helix = "latest"
+sd = "latest"
+"cargo:tealdeer" = "latest"
 
 # ----------------------------------------------------------------------------
 # File Management & Search
@@ -62,98 +63,88 @@ eza = "latest"
 fd = "latest"
 fzf = "latest"
 ripgrep = "latest"
-"pipx:trash-cli" = "latest"
-"cargo:xcp" = "latest"
 zoxide = "latest"
+"cargo:xcp" = "latest"
+"pipx:trash-cli" = "latest"
 
 # ----------------------------------------------------------------------------
-# System Monitoring & Performance
+# System Monitoring & Utilities
 # ----------------------------------------------------------------------------
+bottom = "latest"
 duf = "latest"
-"cargo:du" = "latest"
-"pipx:ttok" = "latest"
+fastfetch = "latest"
 usage = "latest"
 watchexec = "latest"
+"cargo:du" = "latest"
+"cargo:systemctl-tui" = "latest"
+"pipx:ntfy" = "latest"
+"ubi:joehillen/sysz" = "latest"
 
 # ----------------------------------------------------------------------------
-# Text Processing & Editing
+# Security & Encryption
 # ----------------------------------------------------------------------------
-helix = "latest"
-sd = "latest"
-"cargo:tealdeer" = "latest"
+age = "latest"
+sops = "latest"
+"cargo:rops-cli" = "latest"
 
 # ----------------------------------------------------------------------------
-# Terminal & Multiplexers
+# Cloud & Infrastructure
 # ----------------------------------------------------------------------------
-"cargo:mprocs" = "latest"
-television = "latest"
-zellij = "latest"
-"cargo:zesh" = "latest"
+gcloud = "latest"
+lazydocker = "latest"
+mc = "latest"
+rclone = "latest"
+terraform = "latest"
 
 # ----------------------------------------------------------------------------
-# Development Tools
+# Database
 # ----------------------------------------------------------------------------
-"pipx:httpie" = "latest"
+"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "latest"
 "pipx:pgcli" = "latest"
+"ubi:supabase-community/postgres-language-server" = "latest"
+
+# ----------------------------------------------------------------------------
+# Network & HTTP
+# ----------------------------------------------------------------------------
+"cargo:monolith" = "latest"
+"cargo:trippy" = "latest"
+"pipx:httpie" = "latest"
+"ubi:ffuf/ffuf" = "latest"
+
+# ----------------------------------------------------------------------------
+# Linters & Formatters
+# ----------------------------------------------------------------------------
+"cargo:dotenv-linter" = "latest"
+"go:mvdan.cc/sh/v3/cmd/shfmt" = "latest"
+"pipx:ruff" = "latest"
 
 # ----------------------------------------------------------------------------
 # Configuration Management
 # ----------------------------------------------------------------------------
 chezmoi = "latest"
-
-# ----------------------------------------------------------------------------
-# Archive & Compression
-# ----------------------------------------------------------------------------
-"cargo:ouch" = "latest"
-
-
-# ----------------------------------------------------------------------------
-# AI & Language Tools
-# ----------------------------------------------------------------------------
-"pipx:llm" = "latest"
-
-# ----------------------------------------------------------------------------
-# System Utilities & Information
-# ----------------------------------------------------------------------------
-bottom = "latest"
-"cargo:systemctl-tui" = "latest"
-fastfetch = "latest"
-"ubi:joehillen/sysz" = "latest"
-
-# ----------------------------------------------------------------------------
-# Development Utilities
-# ----------------------------------------------------------------------------
-"cargo:dotenv-linter" = "latest"
-"pipx:ruff" = "latest"
-"go:github.com/sqlc-dev/sqlc/cmd/sqlc" = "latest"
-"go:mvdan.cc/sh/v3/cmd/shfmt" = "latest"
-
-# ----------------------------------------------------------------------------
-# Cloud SDKs
-# ----------------------------------------------------------------------------
-gcloud = "latest"
-
-# ----------------------------------------------------------------------------
-# Network & Web Tools
-# ----------------------------------------------------------------------------
-"cargo:trippy" = "latest"
-"ubi:ffuf/ffuf" = "latest"
-
-# ----------------------------------------------------------------------------
-# Miscellaneous Tools
-# ----------------------------------------------------------------------------
-hk = "latest"
-"pipx:juv" = "latest"
 pkl = "latest"
-terraform = "latest"
-"cargo:monolith" = "latest"
-"pipx:ntfy" = "latest"
-"npm:@mermaid-js/mermaid-cli" = "latest"
-"cargo:caligula" = "latest"
-"cargo:asciinema" = "latest"
-"ubi:asciinema/agg" = "1.7.0"
+
+# ----------------------------------------------------------------------------
+# AI & LLM
+# ----------------------------------------------------------------------------
 "npm:@mixedbread/mgrep" = "latest"
 "npm:agent-browser" = "latest"
+"pipx:llm" = "latest"
+"pipx:ttok" = "latest"
+
+# ----------------------------------------------------------------------------
+# Recording & Diagrams
+# ----------------------------------------------------------------------------
+"cargo:asciinema" = "latest"
+"npm:@mermaid-js/mermaid-cli" = "latest"
+"ubi:asciinema/agg" = "1.7.0"
+
+# ----------------------------------------------------------------------------
+# Archive & Disk Tools
+# ----------------------------------------------------------------------------
+"cargo:caligula" = "latest"
+"cargo:ouch" = "latest"
+
 
 # ============================================================================
 # Settings
@@ -171,5 +162,3 @@ uvx = true
 
 [settings.npm]
 bun = true
-
-

@@ -1,0 +1,23 @@
+[tasks.install-psql]
+description = "Install PostgreSQL client via webi"
+run = """
+curl -sS https://webi.sh/webi | sh; \
+source ~/.config/envman/PATH.env; \
+webi psql@17
+"""
+
+[tasks.format]
+description = "Format SQL files with sqlfluff"
+run = "sqlfluff format migrations/*.sql seeding/*.sql"
+
+[tasks.lint]
+description = "Lint SQL files with sqlfluff"
+run = "sqlfluff lint migrations/*.sql seeding/*.sql"
+
+[tasks.fix]
+description = "Lint and fix SQL files with sqlfluff"
+run = "sqlfluff fix migrations/*.sql seeding/*.sql"
+
+[tools]
+"pipx:sqlfluff" = "latest"
+"ubi:bnnanet/postgresql-releases" = { version = "REL_17_2", exe = "psql" }

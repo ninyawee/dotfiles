@@ -26,3 +26,29 @@ stripComponents = 2
 ["./keymapp"]
 type = "archive"
 url = "https://oryx.nyc3.cdn.digitaloceanspaces.com/keymapp/keymapp-latest.tar.gz"
+
+
+["./nerd-dictation"]
+type = "git-repo"
+url = "https://github.com/ninyawee/nerd-dictation.git"
+refreshPeriod = "168h"
+
+["./openclaw"]
+type = "git-repo"
+url = "https://github.com/openclaw/openclaw.git"
+refreshPeriod = "168h"
+
+["./plankton"]
+type = "git-repo"
+url = "https://github.com/alexfazio/plankton.git"
+refreshPeriod = "168h"
+
+["./tippecanoe"]
+type = "git-repo"
+url = "https://github.com/felt/tippecanoe.git"
+refreshPeriod = "168h"
+
+["./android-studio"]
+type = "archive"
+url = "https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2025.1.4.8/android-studio-2025.1.4.8-linux.tar.gz"
+stripComponents = 1

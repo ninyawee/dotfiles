@@ -1,0 +1,40 @@
+
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+       "ls:*",
+      "grep:*",
+      "rg:*",
+      "cat:*",
+      "head:*",
+      "tail:*",
+      "find:*",
+      "wc:*",
+      "which:*"
+    ]
+  },
+  "hooks": {},
+  "enabledPlugins": {
+    "claude-code-wakatime@wakatime": true,
+    "hookify@claude-plugins-official": true,
+    "mgrep@Mixedbread-Grep": true,
+    "context7@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "Mixedbread-Grep": {
+      "source": {
+        "source": "github",
+        "repo": "mixedbread-ai/mgrep"
+      }
+    }
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "teammateMode": "in-process"
+}
