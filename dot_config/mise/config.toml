@@ -152,6 +152,8 @@ terraform = "latest"
 "cargo:caligula" = "latest"
 "cargo:asciinema" = "latest"
 "ubi:asciinema/agg" = "1.7.0"
+"npm:@mixedbread/mgrep" = "latest"
+"npm:agent-browser" = "latest"
 
 # ============================================================================
 # Settings

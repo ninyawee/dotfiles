@@ -2,7 +2,17 @@
 
 ## env vars
 - `fnox` cli is preferred to store and retrive secrets and variables(public-able, app-parameters/feature-flags).
-    - `fnox exec -- [command]` to run commands with secrets loaded from fnox.
+    - `fnox exec -- [command]` to run commands with secrets loaded from fnox. However, prefer `mise` fnox-env plugin to auto-inject fnox vars into mise tasks (no `fnox exec` wrapper needed):
+        ```toml
+        [plugins]
+        fnox-env = "https://github.com/jdx/mise-env-fnox"
+
+        [tools]
+        fnox = "latest"
+
+        [env]
+        _.fnox-env = { tools = true }
+        ```
     - `fnox list` to list available secrets.
     - set
         - variables `fnox set --default [key] [value]`
@@ -77,6 +87,20 @@ print(httpx.get("https://example.com"))
 - ubuntu screenshots location: `~/Pictures/Screenshots/`
 - filenames: `Screenshot from YYYY-MM-DD HH-MM-SS.png`
 - sorted by `ls -1 --sort=time` (oldest first, most recent at bottom via `tail`)
+
+## google tasks & calendar
+- `gog` cli for Google Tasks, Calendar, Gmail, etc.
+- tasks
+    - list task lists: `gog tasks lists list`
+    - add task: `gog tasks add [tasklistId] --title "[title]" --notes "[notes]" --due "YYYY-MM-DD"`
+    - list tasks: `gog tasks list [tasklistId]`
+    - complete: `gog tasks done [tasklistId] [taskId]`
+- calendar
+    - create event: `gog calendar create primary --summary "[title]" --from "YYYY-MM-DD" --to "YYYY-MM-DD" --all-day --description "[desc]"`
+    - timed event: `gog calendar create primary --summary "[title]" --from "2026-03-07T09:00:00" --to "2026-03-07T10:00:00"`
+    - list events: `gog calendar list primary`
+- common flags: `--dry-run`, `--json`, `--plain`
+- task list IDs: run `gog tasks lists list` to discover
 
 ## github issues with screenshots
 - `gh` cli does not support direct image upload to issues.

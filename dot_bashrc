@@ -1,3 +1,6 @@
+# for fix error in claude in vscode terminal
+export _ZO_DOCTOR=0
+
 source ~/.local/share/omakub/defaults/bash/rc
 
 # Editor used by CLI
@@ -6,7 +9,7 @@ export EDITOR="micro"
 # Set use vscode as editor when running in vscode terminal
 # `fnox` needs execution without `args` to work properly, so we can't use `code --wait` as the default editor, but we can set `EDITOR` to `code-wait` when running in vscode terminal
 if [ "$TERM_PROGRAM" = "vscode" ]; then
-  export EDITOR="code-wait"
+  export EDITOR="/home/ben/.local/bin/code-wait"
 fi
 
 export SUDO_EDITOR="$EDITOR"
@@ -21,5 +24,11 @@ fi
 
 export PATH="/home/ben/.bun/bin:$PATH"
 
-eval "$(fnox activate bash)"
+# mise should done my ommakub
+# eval "$("$HOME/.local/bin/mise" activate bash)"
 
+# via mise fnox should be activated. and sec. reason
+# eval "$(fnox activate bash)"
+
+# OpenClaw Completion
+# source "/home/ben/.openclaw/completions/openclaw.bash"
