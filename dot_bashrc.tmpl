@@ -24,11 +24,17 @@ fi
 
 export PATH="/home/ben/.bun/bin:$PATH"
 
+# API Keys (via 1Password CLI)
+export GEMINI_API_KEY="{{ onepasswordRead "op://Private/Google/API/gemini key" }}"
+export PERPLEXITY_API_KEY="{{ onepasswordRead "op://Private/Perplexity/API Token" }}"
+export OPENAI_API_KEY="{{ onepasswordRead "op://Private/Openai/API Keys/API Key" }}"
+
 # mise should done my ommakub
 # eval "$("$HOME/.local/bin/mise" activate bash)"
 
 # via mise fnox should be activated. and sec. reason
 # eval "$(fnox activate bash)"
 
-# OpenClaw Completion
-# source "/home/ben/.openclaw/completions/openclaw.bash"
+# OpenClaw
+alias openclaw="pnpm --dir ~/ddd/tools/openclaw run"
+source "/home/ben/.openclaw/completions/openclaw.bash"
