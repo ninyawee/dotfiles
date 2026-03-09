@@ -1,0 +1,490 @@
+#!/usr/bin/env bash
+# gh-issue - GitHub Issue management for Projects v2
+#
+# Usage: gh-issue <command> [options]
+#
+# Commands:
+#   create        Create issue (optionally as sub-issue)
+#   sub           Manage sub-issues (add/remove/list)
+#   label         Add/remove labels
+#   image         Upload image to issue
+#   meta          Update project v2 fields (status/priority/size/estimate/dates)
+#   relate        Manage relationships (parent/blocked-by/blocking)
+#   fields        List project fields and their options
+#   node-id       Get node ID for an issue
+#
+# Global options:
+#   -R OWNER/REPO   Repository (default: from current git repo)
+#   -P NUMBER        Project number (default: auto-detect from issue)
+
+set -euo pipefail
+
+# --- Helpers ---
+
+die() { echo "error: $*" >&2; exit 1; }
+
+usage() {
+  sed -n '2,/^[^#]/{ /^#/p; }' "$0" | sed 's/^# \?//'
+  exit 0
+}
+
+# Resolve REPO from -R flag or current git context
+resolve_repo() {
+  if [[ -n "${REPO:-}" ]]; then return; fi
+  REPO=$(gh repo view --json nameWithOwner -q '.nameWithOwner' 2>/dev/null) \
+    || die "no repo specified and not in a git repo. Use -R OWNER/REPO"
+}
+
+# Get issue node ID (GraphQL global ID)
+get_node_id() {
+  local repo="$1" number="$2"
+  gh issue view "$number" -R "$repo" --json id -q '.id'
+}
+
+# Get issue REST numeric ID
+get_rest_id() {
+  local repo="$1" number="$2"
+  gh api "repos/$repo/issues/$number" --jq '.id'
+}
+
+# Find project item ID for an issue in a project
+get_project_item_id() {
+  local project_id="$1" issue_node_id="$2"
+  gh api graphql -f query='
+    query($nodeId: ID!) {
+      node(id: $nodeId) {
+        ... on Issue {
+          projectItems(first: 20) {
+            nodes {
+              id
+              project { id }
+            }
+          }
+        }
+      }
+    }
+  ' -f nodeId="$issue_node_id" \
+    --jq ".data.node.projectItems.nodes[] | select(.project.id == \"$project_id\") | .id"
+}
+
+# Auto-detect project for an issue (returns project_number project_id)
+detect_project() {
+  local repo="$1" number="$2"
+  local node_id
+  node_id=$(get_node_id "$repo" "$number")
+  gh api graphql -f query='
+    query($nodeId: ID!) {
+      node(id: $nodeId) {
+        ... on Issue {
+          projectItems(first: 5) {
+            nodes {
+              project { number id title }
+            }
+          }
+        }
+      }
+    }
+  ' -f nodeId="$node_id" \
+    --jq '.data.node.projectItems.nodes[0].project | "\(.number) \(.id) \(.title)"'
+}
+
+# Get project ID from number + owner
+get_project_id() {
+  local number="$1" owner="$2"
+  gh project view "$number" --owner "$owner" --format json --jq '.id' 2>/dev/null \
+    || gh api graphql -f query='
+      query($owner: String!, $number: Int!) {
+        user(login: $owner) {
+          projectV2(number: $number) { id }
+        }
+      }
+    ' -f owner="$owner" -F number="$number" --jq '.data.user.projectV2.id'
+}
+
+# Get field info (id + options) by name for a project
+get_field_info() {
+  local project_number="$1" owner="$2" field_name="$3"
+  gh project field-list "$project_number" --owner "$owner" --format json \
+    | jq -r --arg name "$field_name" '.fields[] | select(.name == $name)'
+}
+
+# Resolve option ID from option name for a single-select field
+resolve_option_id() {
+  local field_json="$1" option_name="$2"
+  echo "$field_json" | jq -r --arg name "$option_name" \
+    '.options[] | select(.name == $name) | .id' \
+    | head -1
+}
+
+# --- Commands ---
+
+cmd_create() {
+  local title="" body="" labels="" parent="" assignee="" milestone=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -t|--title)    title="$2"; shift 2 ;;
+      -b|--body)     body="$2"; shift 2 ;;
+      -l|--label)    labels="${labels:+$labels,}$2"; shift 2 ;;
+      -p|--parent)   parent="$2"; shift 2 ;;
+      -a|--assignee) assignee="$2"; shift 2 ;;
+      -m|--milestone) milestone="$2"; shift 2 ;;
+      *) die "create: unknown option $1" ;;
+    esac
+  done
+
+  [[ -n "$title" ]] || die "create: --title is required"
+  resolve_repo
+
+  local cmd=(gh issue create -R "$REPO" --title "$title")
+  [[ -n "$body" ]]      && cmd+=(--body "$body")
+  [[ -n "$labels" ]]    && cmd+=(--label "$labels")
+  [[ -n "$assignee" ]]  && cmd+=(--assignee "$assignee")
+  [[ -n "$milestone" ]] && cmd+=(--milestone "$milestone")
+
+  local url
+  url=$("${cmd[@]}")
+  echo "$url"
+
+  # Add as sub-issue if parent specified
+  if [[ -n "$parent" ]]; then
+    local child_number
+    child_number=$(basename "$url")
+    echo "Adding #$child_number as sub-issue of #$parent..."
+    cmd_sub add "$parent" "$child_number"
+  fi
+}
+
+cmd_sub() {
+  local action="${1:-}"; shift || die "sub: specify add|remove|list"
+  resolve_repo
+
+  case "$action" in
+    add)
+      local parent="${1:?sub add: parent number required}"
+      local child="${2:?sub add: child number required}"
+      local child_id
+      child_id=$(get_rest_id "$REPO" "$child")
+      gh api "repos/$REPO/issues/$parent/sub_issues" \
+        --method POST \
+        -F sub_issue_id="$child_id" \
+        --jq '.number' \
+        && echo "Added #$child as sub-issue of #$parent"
+      ;;
+    remove)
+      local parent="${1:?sub remove: parent number required}"
+      local child="${2:?sub remove: child number required}"
+      local child_id
+      child_id=$(get_rest_id "$REPO" "$child")
+      gh api "repos/$REPO/issues/$parent/sub_issue" \
+        --method DELETE \
+        -f sub_issue_id="$child_id" \
+        && echo "Removed #$child from sub-issues of #$parent"
+      ;;
+    list)
+      local parent="${1:?sub list: parent number required}"
+      gh api "repos/$REPO/issues/$parent/sub_issues" \
+        --jq '.[] | "#\(.number) \(.state) \(.title)"'
+      ;;
+    *)
+      die "sub: unknown action '$action' (use add|remove|list)"
+      ;;
+  esac
+}
+
+cmd_label() {
+  local action="${1:-add}"; shift || true
+  resolve_repo
+
+  local number="${1:?label: issue number required}"; shift
+  [[ $# -gt 0 ]] || die "label: at least one label required"
+
+  case "$action" in
+    add)
+      for lbl in "$@"; do
+        gh issue edit "$number" -R "$REPO" --add-label "$lbl"
+      done
+      echo "Added labels to #$number: $*"
+      ;;
+    remove)
+      for lbl in "$@"; do
+        gh issue edit "$number" -R "$REPO" --remove-label "$lbl"
+      done
+      echo "Removed labels from #$number: $*"
+      ;;
+    *)
+      die "label: unknown action '$action' (use add|remove)"
+      ;;
+  esac
+}
+
+cmd_image() {
+  local number="${1:?image: issue number required}"
+  local image_path="${2:?image: image path required}"
+  local caption="${3:-}"
+  resolve_repo
+
+  [[ -f "$image_path" ]] || die "image: file not found: $image_path"
+
+  local owner repo_name
+  owner=$(echo "$REPO" | cut -d/ -f1)
+  repo_name=$(echo "$REPO" | cut -d/ -f2)
+  local filename
+  filename=$(basename "$image_path")
+  local dest="docs/screenshots/$filename"
+
+  # Check if we're in the repo
+  local repo_root
+  repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die "image: must be in the git repo to upload images"
+
+  mkdir -p "$repo_root/docs/screenshots"
+  cp "$image_path" "$repo_root/$dest"
+  git -C "$repo_root" add "$dest"
+  git -C "$repo_root" commit -m "docs: add screenshot $filename"
+  git -C "$repo_root" push
+
+  local branch
+  branch=$(git -C "$repo_root" rev-parse --abbrev-ref HEAD)
+  local img_url="https://raw.githubusercontent.com/$REPO/$branch/$dest"
+  local md_img="![${caption:-$filename}]($img_url)"
+
+  # Append image to issue body
+  local current_body
+  current_body=$(gh issue view "$number" -R "$REPO" --json body -q '.body')
+  local new_body="$current_body
+
+$md_img"
+  gh issue edit "$number" -R "$REPO" --body "$new_body"
+  echo "Image uploaded and added to #$number"
+  echo "URL: $img_url"
+}
+
+cmd_meta() {
+  local number="" owner="" project_number=""
+  local status="" priority="" size="" estimate="" start_date="" target_date=""
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --status)      status="$2"; shift 2 ;;
+      --priority)    priority="$2"; shift 2 ;;
+      --size)        size="$2"; shift 2 ;;
+      --estimate)    estimate="$2"; shift 2 ;;
+      --start-date)  start_date="$2"; shift 2 ;;
+      --target-date) target_date="$2"; shift 2 ;;
+      --owner)       owner="$2"; shift 2 ;;
+      --project)     project_number="$2"; shift 2 ;;
+      [0-9]*)        number="$1"; shift ;;
+      *)             die "meta: unknown option $1" ;;
+    esac
+  done
+
+  [[ -n "$number" ]] || die "meta: issue number required"
+  resolve_repo
+
+  # Resolve owner
+  if [[ -z "$owner" ]]; then
+    owner=$(echo "$REPO" | cut -d/ -f1)
+  fi
+
+  # Auto-detect project if not specified
+  if [[ -z "$project_number" ]]; then
+    local project_info
+    project_info=$(detect_project "$REPO" "$number") \
+      || die "meta: issue #$number is not in any project. Use --project NUMBER"
+    project_number=$(echo "$project_info" | awk '{print $1}')
+    local project_id
+    project_id=$(echo "$project_info" | awk '{print $2}')
+    local project_title
+    project_title=$(echo "$project_info" | cut -d' ' -f3-)
+    echo "Detected project: $project_title (#$project_number)"
+  else
+    local project_id
+    project_id=$(get_project_id "$project_number" "$owner")
+  fi
+
+  # Ensure we have project_id
+  if [[ -z "${project_id:-}" ]]; then
+    project_id=$(get_project_id "$project_number" "$owner")
+  fi
+
+  # Get issue node ID and project item ID
+  local node_id
+  node_id=$(get_node_id "$REPO" "$number")
+  local item_id
+  item_id=$(get_project_item_id "$project_id" "$node_id") \
+    || die "meta: issue #$number not found in project $project_number. Add it first."
+  [[ -n "$item_id" ]] || die "meta: issue #$number not found in project $project_number"
+
+  local fields_json
+  fields_json=$(gh project field-list "$project_number" --owner "$owner" --format json)
+
+  # Helper to update a single-select field
+  update_select() {
+    local field_name="$1" value="$2"
+    local field_json
+    field_json=$(echo "$fields_json" | jq -r --arg name "$field_name" '.fields[] | select(.name == $name)')
+    [[ -n "$field_json" ]] || die "meta: field '$field_name' not found in project"
+    local field_id
+    field_id=$(echo "$field_json" | jq -r '.id')
+    local option_id
+    option_id=$(resolve_option_id "$field_json" "$value")
+    [[ -n "$option_id" ]] || {
+      local options
+      options=$(echo "$field_json" | jq -r '.options[].name' | tr '\n' ', ')
+      die "meta: invalid $field_name value '$value'. Options: $options"
+    }
+    gh project item-edit \
+      --id "$item_id" \
+      --project-id "$project_id" \
+      --field-id "$field_id" \
+      --single-select-option-id "$option_id"
+    echo "Set $field_name = $value"
+  }
+
+  # Helper to update a number field
+  update_number() {
+    local field_name="$1" value="$2"
+    local field_id
+    field_id=$(echo "$fields_json" | jq -r --arg name "$field_name" '.fields[] | select(.name == $name) | .id')
+    [[ -n "$field_id" ]] || die "meta: field '$field_name' not found"
+    gh project item-edit \
+      --id "$item_id" \
+      --project-id "$project_id" \
+      --field-id "$field_id" \
+      --number "$value"
+    echo "Set $field_name = $value"
+  }
+
+  # Helper to update a date field
+  update_date() {
+    local field_name="$1" value="$2"
+    local field_id
+    field_id=$(echo "$fields_json" | jq -r --arg name "$field_name" '.fields[] | select(.name == $name) | .id')
+    [[ -n "$field_id" ]] || die "meta: field '$field_name' not found"
+    gh project item-edit \
+      --id "$item_id" \
+      --project-id "$project_id" \
+      --field-id "$field_id" \
+      --date "$value"
+    echo "Set $field_name = $value"
+  }
+
+  # Apply updates
+  [[ -n "$status" ]]      && update_select "Status" "$status"      || true
+  [[ -n "$priority" ]]    && update_select "Priority" "$priority"  || true
+  [[ -n "$size" ]]        && update_select "Size" "$size"          || true
+  [[ -n "$estimate" ]]    && update_number "Estimate" "$estimate"  || true
+  [[ -n "$start_date" ]]  && update_date "Start date" "$start_date"  || true
+  [[ -n "$target_date" ]] && update_date "Target date" "$target_date" || true
+}
+
+cmd_relate() {
+  local action="${1:-}"; shift || die "relate: specify parent|blocked-by|unblocked-by"
+  resolve_repo
+
+  case "$action" in
+    parent)
+      local child="${1:?relate parent: child issue number required}"
+      local parent="${2:?relate parent: parent issue number required}"
+      cmd_sub add "$parent" "$child"
+      ;;
+    blocked-by)
+      local blocked="${1:?relate blocked-by: blocked issue number required}"
+      local blocker="${2:?relate blocked-by: blocker issue number required}"
+      local blocked_id blocker_id
+      blocked_id=$(get_node_id "$REPO" "$blocked")
+      blocker_id=$(get_node_id "$REPO" "$blocker")
+      gh api graphql -f query='
+        mutation($blockedId: ID!, $blockerId: ID!) {
+          addBlockedBy(input: { issueId: $blockedId, blockingIssueId: $blockerId }) {
+            issue { number title }
+            blockingIssue { number title }
+          }
+        }
+      ' -f blockedId="$blocked_id" -f blockerId="$blocker_id" \
+        --jq '"#\(.data.addBlockedBy.issue.number) is now blocked by #\(.data.addBlockedBy.blockingIssue.number)"'
+      ;;
+    unblocked-by)
+      local blocked="${1:?relate unblocked-by: blocked issue number required}"
+      local blocker="${2:?relate unblocked-by: blocker issue number required}"
+      local blocked_id blocker_id
+      blocked_id=$(get_node_id "$REPO" "$blocked")
+      blocker_id=$(get_node_id "$REPO" "$blocker")
+      gh api graphql -f query='
+        mutation($blockedId: ID!, $blockerId: ID!) {
+          removeBlockedBy(input: { issueId: $blockedId, blockingIssueId: $blockerId }) {
+            issue { number title }
+            blockingIssue { number title }
+          }
+        }
+      ' -f blockedId="$blocked_id" -f blockerId="$blocker_id" \
+        --jq '"Removed: #\(.data.removeBlockedBy.issue.number) blocked by #\(.data.removeBlockedBy.blockingIssue.number)"'
+      ;;
+    blocking)
+      # "A blocking B" = "B blocked-by A"
+      local blocker="${1:?relate blocking: blocker issue number required}"
+      local blocked="${2:?relate blocking: blocked issue number required}"
+      cmd_relate blocked-by "$blocked" "$blocker"
+      ;;
+    *)
+      die "relate: unknown action '$action' (use parent|blocked-by|unblocked-by|blocking)"
+      ;;
+  esac
+}
+
+cmd_fields() {
+  local project_number="${1:-}" owner="${2:-}"
+  if [[ -z "$project_number" ]]; then
+    resolve_repo
+    owner=$(echo "$REPO" | cut -d/ -f1)
+    echo "Projects for $owner:"
+    gh project list --owner "$owner" --format json \
+      | jq -r '.projects[] | "#\(.number) \(.title) (\(.items.totalCount) items)"'
+    return
+  fi
+  [[ -n "$owner" ]] || { resolve_repo; owner=$(echo "$REPO" | cut -d/ -f1); }
+
+  gh project field-list "$project_number" --owner "$owner" --format json \
+    | jq -r '.fields[] |
+      if .options then
+        "\(.name) [\(.type)]: " + (.options | map(.name) | join(", "))
+      else
+        "\(.name) [\(.type)]"
+      end'
+}
+
+cmd_node_id() {
+  local number="${1:?node-id: issue number required}"
+  resolve_repo
+  get_node_id "$REPO" "$number"
+}
+
+# --- Main ---
+
+REPO=""
+PROJECT=""
+
+# Parse global options
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -R)          REPO="$2"; shift 2 ;;
+    -P)          PROJECT="$2"; shift 2 ;;
+    -h|--help)   usage ;;
+    *)           break ;;
+  esac
+done
+
+cmd="${1:-}"; shift || usage
+
+case "$cmd" in
+  create)   cmd_create "$@" ;;
+  sub)      cmd_sub "$@" ;;
+  label)    cmd_label "$@" ;;
+  image)    cmd_image "$@" ;;
+  meta)     cmd_meta "$@" ;;
+  relate)   cmd_relate "$@" ;;
+  fields)   cmd_fields "$@" ;;
+  node-id)  cmd_node_id "$@" ;;
+  help)     usage ;;
+  *)        die "unknown command: $cmd (try: create sub label image meta relate fields)" ;;
+esac

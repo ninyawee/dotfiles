@@ -29,29 +29,33 @@ Generate and edit images, and generate videos using Google GenAI SDK (`google-ge
 
 ## Environment
 
-Requires `GEMINI_API_KEY` or `GOOGLE_API_KEY` environment variable.
+Requires `GEMINI_API_KEY` or `GOOGLE_API_KEY` environment variable. The script uses `google-genai` which auto-detects these env vars.
 
-```bash
-fnox get gemini-api-key  # or set GEMINI_API_KEY
-```
+If `fnox` is configured in the project, use `fnox exec --` to inject the key. Otherwise, ensure `GEMINI_API_KEY` is set in the shell environment directly — `fnox` only works inside directories with a `.fnox.toml` config.
 
 ## Image Generation
 
 ```bash
 scripts/gen_image.py "A sunset over mountains" output.png
 scripts/gen_image.py "A cat portrait" cat.jpg --model gemini-3-pro-image-preview --aspect-ratio 9:16
+scripts/gen_image.py "Hero image" hero.png --model gemini-3-pro-image-preview --image-size 4K --aspect-ratio 16:9
 scripts/gen_image.py "Product photo" product.png --model imagen --negative-prompt "blurry"
 ```
 
 ## Image Editing
 
-Pass `--input` with an existing image to edit it. The prompt describes the desired change. Only Gemini models support editing (not Imagen).
+Pass `--input` with an existing image to edit it. The prompt describes the desired change. Only Gemini models support editing (not Imagen). You can pass multiple `--input` flags to composite or combine multiple images.
 
 ```bash
+# Single image editing
 scripts/gen_image.py "Remove the background" clean.png --input photo.jpg
 scripts/gen_image.py "Make it look like a watercolor painting" styled.png --input original.png
 scripts/gen_image.py "Add a party hat to the cat" result.png --input cat.jpg
 scripts/gen_image.py "Change the sky to sunset colors" sunset.png --input landscape.jpg --model gemini-3-pro-image-preview
+
+# Multi-image compositing
+scripts/gen_image.py "Combine: use image 1 as background, add circular headshot from image 2 in bottom-left with name 'John' next to it" og.png --input background.png --input avatar.jpg --aspect-ratio 16:9
+scripts/gen_image.py "Place the product from image 2 onto the table scene in image 1" composite.png --input scene.jpg --input product.png
 ```
 
 **Editing capabilities:**
@@ -61,11 +65,13 @@ scripts/gen_image.py "Change the sky to sunset colors" sunset.png --input landsc
 - Object insertion with realistic lighting
 - Color grading and mood changes
 - Text overlay
+- **Multi-image compositing** — combine 2+ images (e.g., avatar on OG card, product on scene)
 
 **Parameters:**
-- `--input`: Path to the input image to edit
+- `--input`: Path to input image(s). Repeat for multiple images (e.g., `--input bg.png --input avatar.jpg`)
 - `--model`: Model choice (default: `gemini-2.5-flash-image`)
 - `--aspect-ratio`: 1:1, 16:9, 9:16, 4:3 (default: 1:1)
+- `--image-size`: Output resolution for Gemini models (e.g., `4K`). Pro model supports up to 4K (~5504px wide)
 - `--negative-prompt`: What to avoid (Imagen only, generation only)
 
 ## Video Generation
@@ -83,3 +89,15 @@ scripts/gen_video.py "Camera panning over city" city.mp4 --image reference.jpg
 - `--poll-interval`: Seconds between status checks (default: 10)
 
 Video generation is async - script polls until complete.
+
+## Prompting Best Practices
+
+For detailed prompting guidance, read `references/prompting-guide.md`. Key principles:
+
+- **Describe the scene as a paragraph**, not keyword soup -- the model understands narrative intent
+- **Structure prompts as:** Style + Subject + Setting + Action + Composition
+- **Use photography language:** "85mm portrait lens, golden hour backlight, shallow depth of field"
+- **Be hyper-specific:** "ornate elven plate armor, etched with silver leaf patterns" not "fantasy armor"
+- **Provide context:** "logo for high-end skincare brand" helps the model understand intent
+- **Edit, don't regenerate:** if 80% correct, ask for the specific change
+- **Use positive framing:** describe what you want, not what to exclude
