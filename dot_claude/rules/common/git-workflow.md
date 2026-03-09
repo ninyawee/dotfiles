@@ -22,3 +22,10 @@ When creating PRs:
 
 > For the full development process (planning, TDD, code review) before git operations,
 > see [development-workflow.md](./development-workflow.md).
+
+## Git Worktrees
+
+- Use `git worktree` to work on multiple branches simultaneously
+- Worktree path convention: `<repo>.wt.<name>` (e.g. `myapp.wt.main`, `myapp.wt.admin-panel`) as siblings of the main repo directory
+- The main repo directory itself is always a worktree (typically on `develop` or a feature branch)
+- Cleanup: `git worktree remove <path>`, then `git worktree prune` if needed
