@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Switch RustDesk between self-hosted relay and public server
+
+CONFIG="$HOME/.config/rustdesk/RustDesk2.toml"
+
+SELF_HOST_SERVER="100.75.57.31"
+SELF_HOST_KEY="$(op read 'op://Private/rustdesk Server/password')"
+PUBLIC_SERVER="rs-ny.rustdesk.com"
+
+usage() {
+    echo "Usage: rustdesk-relay {self|public|status}"
+    echo "  self    - Use self-hosted relay ($SELF_HOST_SERVER)"
+    echo "  public  - Use public RustDesk server ($PUBLIC_SERVER)"
+    echo "  status  - Show current configuration"
+    exit 1
+}
+
+restart_rustdesk() {
+    if systemctl is-active --quiet rustdesk; then
+        echo "Restarting RustDesk service..."
+        sudo systemctl restart rustdesk
+        echo "RustDesk restarted."
+    elif pgrep -x rustdesk > /dev/null; then
+        echo "Restarting RustDesk..."
+        pkill rustdesk
+        sleep 1
+        nohup rustdesk > /dev/null 2>&1 &
+        echo "RustDesk restarted."
+    else
+        echo "RustDesk is not running. Start it manually if needed."
+    fi
+}
+
+status() {
+    if grep -q "custom-rendezvous-server = '$SELF_HOST_SERVER'" "$CONFIG" 2>/dev/null; then
+        echo "Currently using: SELF-HOSTED ($SELF_HOST_SERVER)"
+    else
+        echo "Currently using: PUBLIC ($PUBLIC_SERVER)"
+    fi
+}
+
+switch_self() {
+    sed -i "s|^rendezvous_server = .*|rendezvous_server = '${SELF_HOST_SERVER}:21116'|" "$CONFIG"
+    # Add fields if missing, update if present
+    grep -q '^custom-rendezvous-server' "$CONFIG" \
+        && sed -i "s|^custom-rendezvous-server = .*|custom-rendezvous-server = '$SELF_HOST_SERVER'|" "$CONFIG" \
+        || echo "custom-rendezvous-server = '$SELF_HOST_SERVER'" >> "$CONFIG"
+    grep -q '^relay-server' "$CONFIG" \
+        && sed -i "s|^relay-server = .*|relay-server = '$SELF_HOST_SERVER'|" "$CONFIG" \
+        || echo "relay-server = '$SELF_HOST_SERVER'" >> "$CONFIG"
+    grep -q '^key' "$CONFIG" \
+        && sed -i "s|^key = .*|key = '$SELF_HOST_KEY'|" "$CONFIG" \
+        || echo "key = '$SELF_HOST_KEY'" >> "$CONFIG"
+    echo "Switched to SELF-HOSTED relay ($SELF_HOST_SERVER)"
+    restart_rustdesk
+}
+
+switch_public() {
+    sed -i "s|^rendezvous_server = .*|rendezvous_server = '${PUBLIC_SERVER}:21116'|" "$CONFIG"
+    sed -i '/^custom-rendezvous-server/d' "$CONFIG"
+    sed -i '/^relay-server/d' "$CONFIG"
+    sed -i '/^key/d' "$CONFIG"
+    echo "Switched to PUBLIC server ($PUBLIC_SERVER)"
+    restart_rustdesk
+}
+
+case "${1:-}" in
+    self)   switch_self ;;
+    public) switch_public ;;
+    status) status ;;
+    *)      usage ;;
+esac
