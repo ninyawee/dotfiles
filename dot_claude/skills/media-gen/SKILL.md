@@ -1,26 +1,30 @@
 ---
 name: media-gen
-description: Generate images and videos using Google GenAI models. Use when user asks to "generate image with Gemini/Nano Banana", "create video with Veo", "make an image using Imagen", or requests media generation with specific models like gemini-2.5-flash-image, gemini-3.0-pro-image, imagen-3.0, veo-3.1, or veo-3.0.
+description: Generate and edit images, and generate videos using Google GenAI models. Use when user asks to "generate image with Gemini/Nano Banana", "edit an image", "modify a photo", "create video with Veo", "make an image using Imagen", or requests media generation/editing with specific models like gemini-3.1-flash-image-preview, gemini-2.5-flash-image, gemini-3-pro-image-preview, imagen, veo-3.1, or veo-3.0. Also trigger when user provides an image and asks to transform, restyle, remove background, add elements, or change style.
 ---
 
-# Media Generation
+# Media Generation & Editing
 
-Generate images and videos using Google GenAI SDK (`google-genai`).
+Generate and edit images, and generate videos using Google GenAI SDK (`google-genai`).
 
 ## Model Selection
 
 | Task | Model | Use Case |
 |------|-------|----------|
-| Image | `gemini-2.5-flash-image` (Nano Banana) | Fast, cheap ($0.039/img) |
-| Image | `gemini-3.0-pro-image` (Nano Banana Pro) | High quality, 4K |
-| Image | `imagen-3.0-generate-002` | Imagen, negative prompts |
+| Image (fast) | `gemini-3.1-flash-image-preview` (Nano Banana 2) | Speed-optimized, high volume |
+| Image (default) | `gemini-2.5-flash-image` (Nano Banana) | Good balance of speed & quality |
+| Image (pro) | `gemini-3-pro-image-preview` (Nano Banana Pro) | Studio-quality 4K, precise text |
+| Image | `imagen` (Imagen 4) | Negative prompts, up to 2K |
+| Image edit | Any Gemini model above | Edit/transform existing images |
 | Video | `veo-3.1-generate-preview` | Best quality, audio |
 | Video | `veo-3.1-fast-generate-preview` | Faster generation |
 
 **Auto-selection logic:**
 - Image without special needs → `gemini-2.5-flash-image`
-- Image needing 4K or high quality → `gemini-3.0-pro-image`
-- Image with negative prompt → `imagen-3.0-generate-002`
+- Image needing speed/volume → `gemini-3.1-flash-image-preview`
+- Image needing 4K or pro quality → `gemini-3-pro-image-preview`
+- Image with negative prompt → `imagen`
+- Image editing → same Gemini model as generation (default `gemini-2.5-flash-image`)
 - Video → `veo-3.1-generate-preview`
 
 ## Environment
@@ -35,14 +39,34 @@ fnox get gemini-api-key  # or set GEMINI_API_KEY
 
 ```bash
 scripts/gen_image.py "A sunset over mountains" output.png
-scripts/gen_image.py "A cat portrait" cat.jpg --model gemini-3.0-pro-image --aspect-ratio 9:16
-scripts/gen_image.py "Product photo" product.png --model imagen-3.0-generate-002 --negative-prompt "blurry"
+scripts/gen_image.py "A cat portrait" cat.jpg --model gemini-3-pro-image-preview --aspect-ratio 9:16
+scripts/gen_image.py "Product photo" product.png --model imagen --negative-prompt "blurry"
 ```
 
+## Image Editing
+
+Pass `--input` with an existing image to edit it. The prompt describes the desired change. Only Gemini models support editing (not Imagen).
+
+```bash
+scripts/gen_image.py "Remove the background" clean.png --input photo.jpg
+scripts/gen_image.py "Make it look like a watercolor painting" styled.png --input original.png
+scripts/gen_image.py "Add a party hat to the cat" result.png --input cat.jpg
+scripts/gen_image.py "Change the sky to sunset colors" sunset.png --input landscape.jpg --model gemini-3-pro-image-preview
+```
+
+**Editing capabilities:**
+- Add, remove, or modify elements in the image
+- Style transfer (photo → anime, watercolor, oil painting, etc.)
+- Background removal or replacement
+- Object insertion with realistic lighting
+- Color grading and mood changes
+- Text overlay
+
 **Parameters:**
+- `--input`: Path to the input image to edit
 - `--model`: Model choice (default: `gemini-2.5-flash-image`)
 - `--aspect-ratio`: 1:1, 16:9, 9:16, 4:3 (default: 1:1)
-- `--negative-prompt`: What to avoid (Imagen only)
+- `--negative-prompt`: What to avoid (Imagen only, generation only)
 
 ## Video Generation
 
