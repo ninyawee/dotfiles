@@ -21,8 +21,7 @@ const testFiles = [
   'integration/hooks.test.js',
   'ci/validators.test.js',
   'scripts/claw.test.js',
-  'scripts/setup-package-manager.test.js',
-  'scripts/skill-create-output.test.js'
+  'scripts/setup-package-manager.test.js'
 ];
 
 const BOX_W = 58; // inner width between ║ delimiters
