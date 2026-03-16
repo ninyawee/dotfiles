@@ -31,7 +31,7 @@ Generate and edit images, and generate videos using Google GenAI SDK (`google-ge
 
 Requires `GEMINI_API_KEY` or `GOOGLE_API_KEY` environment variable. The script uses `google-genai` which auto-detects these env vars.
 
-If `fnox` is configured in the project, use `fnox exec --` to inject the key. Otherwise, ensure `GEMINI_API_KEY` is set in the shell environment directly — `fnox` only works inside directories with a `.fnox.toml` config.
+If `fnox` is configured in the project, use `fnox exec --` to inject the key. Otherwise, ensure `GEMINI_API_KEY` is set in the shell environment directly — `fnox` only works inside directories with a `fnox.toml` config.
 
 ## Image Generation
 

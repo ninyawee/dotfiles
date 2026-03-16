@@ -1,7 +1,5 @@
 # CLAUDE.md Global
 
-
-
 ## Core Philosophy
 
 You are Claude Code. I use specialized agents and skills for complex tasks.
@@ -29,8 +27,30 @@ Detailed guidelines are in `~/.claude/rules/`:
 | patterns.md | API response, repository patterns |
 | performance.md | Model selection, context management |
 | hooks.md | Hooks System |
-| tooling.md | CLI preferences (mise, bun, uv, gog) |
+| tooling.md | CLI preferences (mise, bun, uv, gws) |
 | conventions.md | Typing notation, notes, screenshots |
+
+## Hooks
+
+Active hooks are registered in two places:
+- **`~/.claude/settings.json`** `"hooks"` key — directly loaded by Claude Code (authoritative)
+- **`~/.claude/hooks/hooks.json`** — plugin hooks (requires plugin registration in `enabledPlugins`)
+
+Hook scripts live in `~/.claude/scripts/hooks/`. Key hooks:
+
+| Hook | Type | What It Does |
+|------|------|-------------|
+| sudo-confirm.js | PreToolUse/Bash | Intercepts `sudo` commands, shows zenity confirmation popup, executes with zenity askpass, returns output to Claude |
+| block-dev-server.js | PreToolUse/Bash | Blocks dev servers outside zellij |
+| zellij-reminder.js | PreToolUse/Bash | Suggests zellij for long-running commands |
+| git-push-reminder.js | PreToolUse/Bash | Reminds to review before git push |
+| post-edit-format.js | PostToolUse/Edit | Auto-formats JS/TS with Prettier/Biome |
+| post-edit-typecheck.js | PostToolUse/Edit | Runs tsc after .ts/.tsx edits |
+
+The sudo hook (`sudo-confirm.js` + `sudo-askpass.sh`) enables privileged command execution:
+1. Zenity confirmation popup (Allow/Block)
+2. Zenity password dialog (only when sudo cache expired)
+3. Executes command and returns output to Claude
 
 ---
 
@@ -47,14 +67,12 @@ Located in `~/.claude/agents/`:
 | code-architect | Feature architecture design from codebase patterns |
 | code-explorer | Codebase analysis, execution tracing, dependency mapping |
 | security-reviewer | Security vulnerability analysis |
-| build-error-resolver | Build error resolution |
 | e2e-runner | Playwright E2E testing |
 | refactor-cleaner | Dead code cleanup |
 | doc-updater | Documentation updates |
 | chief-of-staff | Multi-channel communication triage (email, Slack, LINE) |
 | database-reviewer | PostgreSQL/Supabase schema, queries, performance |
 | go-reviewer | Go code review (idiomatic, concurrency, errors) |
-| go-build-resolver | Go build/vet/linter error resolution |
 | python-reviewer | Python code review (PEP 8, type hints, security) |
 
 ---
@@ -67,7 +85,6 @@ Located in `~/.claude/agents/`:
 
 ### Code Style
 - No emojis in code, comments, or documentation
-- Prefer immutability - never mutate objects or arrays
 - Many small files over few large files
 - 200-400 lines typical, 800 max per file
 
@@ -75,30 +92,6 @@ Located in `~/.claude/agents/`:
 - Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`
 - Always test locally before committing
 - Small, focused commits
-
-### Testing
-- TDD: Write tests first
-- 80% minimum coverage
-- Unit + integration + E2E for critical flows
-
----
-
-## Editor Integration
-
-I use Zed as my primary editor:
-- Agent Panel for file tracking
-- CMD+Shift+R for command palette
-- Vim mode enabled
-
----
-
-## Success Metrics
-
-You are successful when:
-- All tests pass (80%+ coverage)
-- No security vulnerabilities
-- Code is readable and maintainable
-- User requirements are met
 
 ---
 

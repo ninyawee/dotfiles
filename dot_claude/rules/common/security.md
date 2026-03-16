@@ -31,13 +31,13 @@ Before ANY commit:
 
 ### fnox Config Rules
 
-- `.fnox.toml` goes at project root (git root) ONLY
-- NEVER create `~/.fnox.toml` — no global config allowed
+- `fnox.toml` goes at project root (git root) ONLY
+- NEVER create `~/fnox.toml` — no global config allowed
 - Hierarchical config: secrets expose only to directories below the config file
 
 ### fnox Starter Template
 
-Every project `.fnox.toml` MUST contain providers:
+Every project `fnox.toml` MUST contain providers:
 
 ```toml
 [providers.age]

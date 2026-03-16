@@ -1,40 +1,52 @@
-
 {
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "permissions": {
     "allow": [
-       "ls:*",
-      "grep:*",
-      "rg:*",
-      "cat:*",
-      "head:*",
-      "tail:*",
-      "find:*",
-      "wc:*",
-      "which:*"
+      "Bash(bun run build:*)",
+      "WebFetch",
+      "WebSearch",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   },
-  "hooks": {},
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /home/ben/.claude/scripts/hooks/sudo-confirm.js"
+          }
+        ],
+        "description": "Intercept sudo commands with GNOME confirmation popup"
+      }
+    ]
+  },
   "enabledPlugins": {
     "claude-code-wakatime@wakatime": true,
     "hookify@claude-plugins-official": true,
-    "mgrep@Mixedbread-Grep": true,
     "context7@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true
+    "security-guidance@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "plannotator@plannotator": true
   },
   "extraKnownMarketplaces": {
-    "Mixedbread-Grep": {
+    "plannotator": {
       "source": {
         "source": "github",
-        "repo": "mixedbread-ai/mgrep"
+        "repo": "backnotprop/plannotator"
       }
     }
   },
+  "effortLevel": "medium",
+  "voiceEnabled": true,
   "skipDangerousModePermissionPrompt": true,
   "teammateMode": "in-process"
 }

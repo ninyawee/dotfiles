@@ -7,6 +7,26 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bun /home/ben/.claude/scripts/hooks/sudo-confirm.js"
+          }
+        ],
+        "description": "Intercept sudo commands with GNOME confirmation popup"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "intercept",
+            "command": "bash -c 'CMD=\"$CLAUDE_TOOL_INPUT_command\"; if echo \"$CMD\" | grep -qP \"bun\\s+(install|add)\\s+-g\\s+\"; then PKG=$(echo \"$CMD\" | grep -oP \"(?<=bun\\s(install|add)\\s-g\\s)\\S+\"); echo \"{\\\"decision\\\": \\\"block\\\", \\\"reason\\\": \\\"Use mise for global installs: mise use -g npm:$PKG\\\"}\"; else echo \"{\\\"decision\\\": \\\"allow\\\"}\"; fi'"
+          }
+        ],
+        "description": "Redirect bun install -g to mise use -g npm:<pkg>"
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
             "command": "bun \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/block-dev-server.js\""
           }
         ],
@@ -77,18 +97,6 @@
           }
         ],
         "description": "Log PR URL and provide review command after PR creation"
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun \"${CLAUDE_PLUGIN_ROOT}/scripts/hooks/build-analysis.js\"",
-            "async": true,
-            "timeout": 30
-          }
-        ],
-        "description": "Example: async hook for build analysis (runs in background without blocking)"
       },
       {
         "matcher": "Edit",
