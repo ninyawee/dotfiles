@@ -7,3 +7,5 @@ CLAUDE.md
 /.vscode/
 
 mise.toml
+# Compiled bun binary for sudo-confirm hook (rebuild via scripts/hooks/build.sh)
+.claude/scripts/hooks/sudo-confirm

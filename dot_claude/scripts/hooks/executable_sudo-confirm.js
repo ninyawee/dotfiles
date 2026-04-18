@@ -1,100 +1,104 @@
 #!/usr/bin/env bun
-
 /**
- * PreToolUse Hook: Intercept sudo commands with GNOME confirmation dialog
+ * PreToolUse hook: intercept sudo commands with a GNOME confirmation dialog.
  *
- * Flow:
- * 1. Detect sudo in command
- * 2. Show zenity confirmation popup
- * 3. If approved, execute the command with zenity-based askpass for password
- * 4. Capture output and return it to Claude (block original to avoid double-run)
- * 5. If denied, block with reason
+ * 1. Detect sudo at command position (fast substring + regex)
+ * 2. zenity --question (Allow/Block)
+ * 3. Execute with SUDO_ASKPASS=zenity (password only if cache expired)
+ * 4. Block original (exit 2) and surface output via stderr so Claude sees it
  */
 
-import { execSync, execFileSync } from 'child_process';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { spawnSync } from 'child_process';
 
-const ASKPASS = join(dirname(fileURLToPath(import.meta.url)), 'sudo-askpass.sh');
-const ENV = { ...process.env, DISPLAY: process.env.DISPLAY || ':1' };
+const HOME = process.env.HOME ?? '';
+const ASKPASS = `${HOME}/.claude/scripts/hooks/sudo-askpass.sh`;
+const ENV = { ...process.env, DISPLAY: process.env.DISPLAY || ':0' };
+const STDIN_LIMIT = 1 << 20;
 
-let data = '';
-process.stdin.on('data', chunk => (data += chunk));
-process.stdin.on('end', () => {
-  try {
-    const input = JSON.parse(data);
-    const cmd = input.tool_input?.command || '';
+const SUDO_AT_CMD = /(^|&&|\|\||;|\||\$\()(\s*)sudo\b/;
+const SUDO_NOOP = /^\s*sudo\s+-[kKv]\s*$/;
 
-    // Match sudo only as a command (start of line/after && || ; | or $(...))
-    // Not inside file paths, variable names, etc.
-    const sudoCmdPattern = /(^|&&|\|\||;|\||\$\()\s*sudo\b/;
-    if (!sudoCmdPattern.test(cmd) || /^\s*sudo\s+-(k|K|v)\s*$/.test(cmd)) {
-      process.stdout.write(data);
-      return;
-    }
+const HTML_ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+const escapeHtml = (s) => s.replace(/[&<>]/g, (c) => HTML_ESC[c]);
 
-    const displayCmd = cmd.length > 300 ? cmd.slice(0, 300) + '...' : cmd;
-    const safeDisplay = displayCmd
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-
-    // Step 1: Ask user for confirmation
-    try {
-      execFileSync('zenity', [
-        '--question',
-        '--title=Claude Code: sudo confirmation',
-        `--text=Claude wants to run a privileged command:\n\n<tt>${safeDisplay}</tt>\n\nYou will be prompted for your password if you allow.`,
-        '--ok-label=Allow',
-        '--cancel-label=Block',
-        '--width=520',
-        '--icon-name=dialog-warning',
-        '--timeout=60',
-      ], { stdio: 'pipe', timeout: 65000, env: ENV });
-    } catch {
-      // User clicked Block or timeout
-      console.error('[Hook] BLOCKED: sudo command rejected by user');
-      process.exit(2);
-    }
-
-    // Step 2: Execute with zenity askpass for password entry
-    // Uses SUDO_ASKPASS with zenity only when sudo needs a password
-    // Only replace sudo when used as a command, preserving any prefix (&&, ;, etc.)
-    const escalatedCmd = cmd.replace(/(^|(?<=&&\s*)|(?<=\|\|\s*)|(?<=;\s*)|(?<=\|\s*)|(?<=\$\(\s*))sudo\b/, 'sudo -A');
-
-    let stdout = '';
-    let stderr = '';
-    let exitCode = 0;
-
-    try {
-      stdout = execSync(escalatedCmd, {
-        encoding: 'utf-8',
-        timeout: 120000,
-        env: { ...ENV, SUDO_ASKPASS: ASKPASS },
-        shell: '/bin/bash',
-        maxBuffer: 10 * 1024 * 1024,
-      });
-    } catch (err) {
-      exitCode = err.status ?? 1;
-      stdout = err.stdout ?? '';
-      stderr = err.stderr ?? '';
-    }
-
-    // Step 3: Return output to Claude by blocking the original command
-    // and putting the result in stderr (which Claude sees as hook feedback)
-    const output = [stdout, stderr].filter(Boolean).join('\n').trim();
-    const status = exitCode === 0 ? 'completed successfully' : `failed (exit ${exitCode})`;
-
-    console.error(`[sudo-confirm] Command ${status}`);
-    if (output) {
-      console.error(`[sudo-confirm] Output:\n${output}`);
-    }
-
-    // Block the original command since we already executed it
-    process.exit(2);
-  } catch (err) {
-    // Parse error or unexpected failure - pass through
-    console.error(`[sudo-confirm] Hook error: ${err.message}`);
-    process.stdout.write(data);
+async function readStdin() {
+  process.stdin.setEncoding('utf8');
+  let buf = '';
+  for await (const chunk of process.stdin) {
+    buf += chunk;
+    if (buf.length >= STDIN_LIMIT) break;
   }
+  return buf.slice(0, STDIN_LIMIT);
+}
+
+function passthrough(raw) {
+  process.stdout.write(raw);
+  process.exit(0);
+}
+
+function zenityConfirm(displayCmd) {
+  const r = spawnSync('zenity', [
+    '--question',
+    '--title=Claude Code: sudo confirmation',
+    `--text=Claude wants to run a privileged command:\n\n<tt>${escapeHtml(displayCmd)}</tt>\n\nYou will be prompted for your password if you allow.`,
+    '--ok-label=Allow',
+    '--cancel-label=Block',
+    '--width=520',
+    '--icon-name=dialog-warning',
+    '--timeout=60',
+  ], { stdio: 'pipe', timeout: 65_000, env: ENV });
+  return r.status === 0;
+}
+
+function runEscalated(cmd) {
+  const escalated = cmd.replace(SUDO_AT_CMD, (_, p1, p2) => `${p1}${p2}sudo -A`);
+  const r = spawnSync(escalated, {
+    encoding: 'utf-8',
+    shell: '/bin/bash',
+    env: { ...ENV, SUDO_ASKPASS: ASKPASS },
+    timeout: 120_000,
+    maxBuffer: 10 << 20,
+  });
+  return {
+    stdout: r.stdout ?? '',
+    stderr: r.stderr ?? '',
+    exitCode: r.status ?? (r.error ? 1 : 0),
+  };
+}
+
+async function main() {
+  const raw = await readStdin();
+
+  let input;
+  try {
+    input = JSON.parse(raw);
+  } catch {
+    passthrough(raw);
+  }
+
+  const cmd = input?.tool_input?.command ?? '';
+
+  if (!cmd.includes('sudo') || !SUDO_AT_CMD.test(cmd) || SUDO_NOOP.test(cmd)) {
+    passthrough(raw);
+  }
+
+  const displayCmd = cmd.length > 300 ? cmd.slice(0, 300) + '...' : cmd;
+
+  if (!zenityConfirm(displayCmd)) {
+    console.error('[sudo-confirm] BLOCKED: rejected by user');
+    process.exit(2);
+  }
+
+  const { stdout, stderr, exitCode } = runEscalated(cmd);
+  const output = [stdout, stderr].filter(Boolean).join('\n').trim();
+
+  console.error(`[sudo-confirm] ${exitCode === 0 ? 'completed' : `failed (exit ${exitCode})`}`);
+  if (output) console.error(`[sudo-confirm] Output:\n${output}`);
+
+  process.exit(2);
+}
+
+main().catch((err) => {
+  console.error(`[sudo-confirm] Hook error: ${err.message}`);
+  process.exit(0);
 });

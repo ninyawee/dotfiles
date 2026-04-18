@@ -9,7 +9,11 @@
       "WebSearch",
       "Bash(git add:*)",
       "Bash(git commit:*)"
-    ]
+    ],
+    "ask": [
+      "Bash(supabase db push:*)"
+    ],
+    "defaultMode": "auto"
   },
   "hooks": {
     "PreToolUse": [
@@ -18,15 +22,17 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun /home/ben/.claude/scripts/hooks/sudo-confirm.js"
+            "command": "/home/ben/.claude/scripts/hooks/sudo-confirm"
           }
-        ],
-        "description": "Intercept sudo commands with GNOME confirmation popup"
+        ]
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/ben/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
-    "claude-code-wakatime@wakatime": true,
     "hookify@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
@@ -35,7 +41,10 @@
     "security-guidance@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "plannotator@plannotator": true
+    "plannotator@plannotator": true,
+    "slack@claude-plugins-official": true,
+    "ralph-loop@claude-plugins-official": true,
+    "discord@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
@@ -45,8 +54,9 @@
       }
     }
   },
-  "effortLevel": "medium",
-  "voiceEnabled": true,
+  "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true,
   "teammateMode": "in-process"
 }

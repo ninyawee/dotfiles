@@ -36,16 +36,14 @@ Active hooks are registered in two places:
 - **`~/.claude/settings.json`** `"hooks"` key — directly loaded by Claude Code (authoritative)
 - **`~/.claude/hooks/hooks.json`** — plugin hooks (requires plugin registration in `enabledPlugins`)
 
-Hook scripts live in `~/.claude/scripts/hooks/`. Key hooks:
+Hook scripts live in `~/.claude/scripts/hooks/`. Active hooks:
 
-| Hook | Type | What It Does |
-|------|------|-------------|
-| sudo-confirm.js | PreToolUse/Bash | Intercepts `sudo` commands, shows zenity confirmation popup, executes with zenity askpass, returns output to Claude |
-| block-dev-server.js | PreToolUse/Bash | Blocks dev servers outside zellij |
-| zellij-reminder.js | PreToolUse/Bash | Suggests zellij for long-running commands |
-| git-push-reminder.js | PreToolUse/Bash | Reminds to review before git push |
-| post-edit-format.js | PostToolUse/Edit | Auto-formats JS/TS with Prettier/Biome |
-| post-edit-typecheck.js | PostToolUse/Edit | Runs tsc after .ts/.tsx edits |
+| Hook | Source | Type | What It Does |
+|------|--------|------|-------------|
+| sudo-confirm.js | settings.json | PreToolUse/Bash | Intercepts `sudo`, shows zenity confirmation, executes with askpass, returns output to Claude |
+| zellij-tab-status | hooks.json | multiple lifecycle events | Updates zellij tab status indicator (working/ready/needs-input) |
+
+Code-quality automations (formatting, typechecking, lint warnings) are handled by **pre-commit** at the project level, not Claude Code hooks.
 
 The sudo hook (`sudo-confirm.js` + `sudo-askpass.sh`) enables privileged command execution:
 1. Zenity confirmation popup (Allow/Block)
